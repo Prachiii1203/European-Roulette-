@@ -17,6 +17,7 @@ function App() {
   const [spinResult, setSpinResult] = useState(null);
   const [selectedBet, setSelectedBet] = useState("");
   const [msg, setMsg] = useState("");
+  const [singlebet, setSinglebet] = useState(null);
 
   const [UserChipAmt, SetUserChipAmt] = useState(null);
 
@@ -64,6 +65,11 @@ function App() {
       case "19-36/Higer":
         setMsg(val > 18 && val <= 36 ? "Win" : "Loss");
         countBetAmt();
+        break;
+      case "single Value":
+        setMsg(singlebet === Number(val) ? "Win" : "Loss");
+        countBetAmt(35);
+        setSinglebet(null);
         break;
       default:
         console.log("CHALA JA ");
@@ -114,7 +120,17 @@ function App() {
         <div className="divbtn">
           {wheelNumbers.map((wno, index) => (
             <>
-              <button key={index}>{wno}</button>
+              <button
+                key={index}
+                onClick={() => {
+                  setSelectedBet("single Value");
+                  setSinglebet(wno);
+                  console.log(wno);
+                  console.log("single Value");
+                }}
+              >
+                {wno}
+              </button>
             </>
           ))}
         </div>
@@ -144,8 +160,9 @@ function App() {
               Bet on {selectedBet} {UserChipAmt && <>of {UserChipAmt} ₹</>}{" "}
             </>
           )}
+          {singlebet && <p>Single Bet value : {singlebet}</p>}
         </p>
-        {spinResult && <p>Result : {spinResult}</p>}
+        {spinResult !== null && <p>Result : {spinResult}</p>}
         {msg && <p className="spinresStatus">{msg}</p>}
       </div>
     </>
