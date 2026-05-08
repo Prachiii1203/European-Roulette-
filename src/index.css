@@ -18,7 +18,7 @@
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
-  color: var(--text);
+  /* color: var(--text); */
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -32,9 +32,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
+    --text: white;
     --text-h: #f3f4f6;
-    --bg: #16171d;
+    --bg: #06281de0;
     --border: #2e303a;
     --code-bg: #1f2028;
     --accent: #c084fc;
@@ -65,30 +65,106 @@ body {
 button {
   margin: 5px;
   padding: 10px 15px;
-  background-color: #4f557ac2;
+  background-color: #1e7457c2;
   outline: none;
   border: 1px solid white;
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 14px;
 }
 
-.divbtn {
+.divbtn .otherbtn {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
+  width: 100%;
 }
 
-.spinresStatus {
-  font-weight: 700;
-  font-size: xx-large;
-  width: max-content;
-  color: white;
-  background-color: rgba(218, 119, 160, 0.616);
-  margin: 10px auto;
-  padding: 15px 30px;
-  border-radius: 15px;
-  /* border: 1px solid white; */
+.divbtn .Greenbtn {
+  height: stretch;
+  background-color: green;
+}
+
+.divbtn {
+  display: flex;
+  justify-content: center;
 }
 
 .spinbtn {
   padding: 10px 30px;
+}
+
+.chipInfo {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.chipData {
+  display: flex;
+  flex-direction: column;
+  align-items: first baseline;
+  font-size: 16px;
+}
+
+.chipData p {
+  margin: 5px 2px 5px 3px;
+  text-transform: capitalize;
+}
+
+.spinlossStatus {
+  font-weight: 700;
+  font-size: x-large;
+  width: max-content;
+  color: white;
+  background-color: rgba(218, 119, 160, 0.616);
+  margin: 10px auto;
+  padding: 12px 30px;
+  border-radius: 15px;
+  /* border: 1px solid white; */
+}
+
+.spinWinStatus {
+  font-weight: 700;
+  font-size: x-large;
+  width: max-content;
+  color: white;
+  background-color: rgba(13, 150, 59, 0.795);
+  margin: 10px auto;
+  padding: 12px 30px;
+  border-radius: 15px;
+  /* border: 1px solid white; */
+}
+
+.NoresultDiv {
+  display: none;
+}
+
+.resultDiv {
+  font-size: large;
+  background-color: #08060d94;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 10px;
+  border: 1px;
+  border-radius: 8px;
+  box-shadow: 0px 5px 5px black;
+  margin: 10px auto;
+}
+
+.spinNo {
+  border: 1px solid white;
+  border-radius: 50px;
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 20px;
+}
+
+.redbtn {
+  background-color: rgba(255, 0, 0, 0.774);
+}
+
+.blackbtn {
+  background-color: rgba(0, 0, 0, 0.774);
 }

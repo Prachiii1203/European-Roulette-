@@ -4,6 +4,8 @@ function App() {
   const [totalAmt, setTotalAmt] = useState(1000);
   const wheelNumbers = [];
   const Bet_type = [
+    "Red",
+    "Black",
     "Odd",
     "Even",
     "1st 12",
@@ -18,23 +20,35 @@ function App() {
   const [msg, setMsg] = useState("");
   const [singlebet, setSinglebet] = useState(null);
   const [UserChipAmt, SetUserChipAmt] = useState(null);
+  const RED_NUM = [
+    2, 3, 5, 7, 10, 11, 12, 14, 16, 17, 21, 23, 25, 28, 30, 31, 33, 35,
+  ];
 
-  for (let i = 0; i <= 36; i++) {
+  for (let i = 1; i <= 36; i++) {
     wheelNumbers.push(i);
   }
 
   const WheelResult = () => {
     if (UserChipAmt === null) {
-      return alert("Please Select The Amount of Bet");
+      return alert("Please Select The Amount To Bet");
     }
 
     if (selectedBet === "") {
-      return alert("Please Select Bet Type First");
+      return alert("Please Select Bet Type");
     }
-    let val = Math.floor(Math.random() * wheelNumbers.length);
+    if (totalAmt < UserChipAmt) {
+      return alert("You don't have sufficient balance");
+    }
+    let val = Math.floor(Math.random() * wheelNumbers.length + 1);
     setSpinResult(val);
 
     switch (selectedBet) {
+      case "Red":
+        countBetAmt(RED_NUM.includes(val));
+        break;
+      case "Black":
+        countBetAmt(!RED_NUM.includes(val) && val !== 0);
+        break;
       case "Odd":
         countBetAmt(val !== 0 && val % 2 !== 0);
         break;
@@ -56,9 +70,9 @@ function App() {
       case "19-36/Higer":
         countBetAmt(val > 18 && val <= 36);
         break;
-      case "single Value":
+      case "single Bet":
         countBetAmt(singlebet === Number(val), 35);
-        setSinglebet(null);
+        // setSinglebet(null);
         break;
       default:
         // console.log("There is not such kind of Bet here");
@@ -67,16 +81,12 @@ function App() {
   };
 
   const countBetAmt = (resultcondition, n = 2) => {
-    if (totalAmt < UserChipAmt) {
-      return alert("You don't have sufficient balance");
-    }
-
     const resultMsg = resultcondition ? "Win" : "Loss";
     setMsg(resultMsg);
 
     if (resultMsg === "Win") {
       const winprice = n * UserChipAmt;
-      setTotalAmt((tot) => tot + winprice);
+      setTotalAmt((tot) => tot + winprice - UserChipAmt);
     } else {
       setTotalAmt((tot) => tot - UserChipAmt);
     }
@@ -99,34 +109,71 @@ function App() {
     <>
       <div>
         <h1>European Roulette Casino</h1>
-
-        <h3>Total Balance : {totalAmt} ₹</h3>
-        <div className="divChip">
-          {chipAmt.map((chip, index) => (
+        <div>
+          <h3>Total Chip Balance : {totalAmt} ₹</h3>
+        </div>
+        <div className="chipInfo">
+          <div className="divChip">
+            {chipAmt.map((chip, index) => (
+              <button
+                key={index}
+                onClick={(e) => {
+                  SetUserChipAmt(Number(e.target.value));
+                }}
+                value={chip}
+              >
+                {chip} ₹
+              </button>
+            ))}
+            <br />
             <button
-              key={index}
-              onClick={(e) => {
-                SetUserChipAmt(Number(e.target.value));
+              onClick={() => {
+                if (window.confirm("You sure want to add 1000 ?")) {
+                  setTotalAmt((t) => t + 1000);
+                }
+                return;
               }}
-              value={chip}
             >
-              {chip} ₹
+              + Add more 1000 chip in balance
             </button>
-          ))}
+          </div>
+          <div className="chipData">
+            {selectedBet && <p>Bet Type : {selectedBet} </p>}
+            {selectedBet === "single Bet" && singlebet !== null && (
+              <p>Single Bet on : {singlebet}</p>
+            )}
+            {UserChipAmt && <p>Chip : {UserChipAmt} ₹</p>}
+          </div>
         </div>
         <hr />
         <div className="divbtn">
-          {wheelNumbers.map((wno, index) => (
+          <div className="btn0">
             <button
-              key={index}
+              className="Greenbtn"
               onClick={() => {
-                setSelectedBet("single Value");
-                setSinglebet(wno);
+                setSelectedBet("single Bet");
+                setSinglebet(0);
               }}
             >
-              {wno}
+              0{" "}
             </button>
-          ))}
+          </div>
+          <div className="otherbtn">
+            {wheelNumbers.map((wno, index) => (
+              <button
+                className={
+                  RED_NUM.includes(Number(wno)) ? "redbtn" : "blackbtn"
+                }
+                key={index}
+                onClick={() => {
+                  setSelectedBet("single Bet");
+                  setSinglebet(wno);
+                }}
+              >
+                {wno}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="betTypes">
           {Bet_type.map((bet_ty, index) => (
@@ -135,21 +182,24 @@ function App() {
             </button>
           ))}
         </div>
-        <button onClick={WheelResult} className="spinbtn">
+        <button
+          onClick={WheelResult}
+          className="spinbtn"
+          disabled={!selectedBet || !UserChipAmt}
+        >
           Spin
         </button>
         <button onClick={clrVal}>Clear</button>
         <br />
-        {selectedBet && (
-          <p>
-            Bet on {selectedBet} {UserChipAmt && <>of {UserChipAmt} ₹</>}{" "}
-          </p>
-        )}
-        {selectedBet === "single Value" && singlebet !== null && (
-          <p>Single Bet value : {singlebet}</p>
-        )}
-        {spinResult !== null && <p>Result : {spinResult}</p>}
-        {msg && <p className="spinresStatus">{msg}</p>}
+
+        <div className={spinResult ? "resultDiv" : "NoresultDiv"}>
+          {spinResult !== null && <p className="spinNo"> {spinResult}</p>}
+          {msg && (
+            <p className={msg === "Loss" ? "spinlossStatus" : "spinWinStatus"}>
+              {msg}
+            </p>
+          )}
+        </div>
       </div>
     </>
   );
