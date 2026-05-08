@@ -64,10 +64,12 @@ body {
 
 button {
   margin: 5px;
-  padding: 15px 15px;
+  padding: 10px 15px;
   background-color: #4f557ac2;
   outline: none;
   border: 1px solid white;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
 .divbtn {
@@ -78,5 +80,15 @@ button {
 .spinresStatus {
   font-weight: 700;
   font-size: xx-large;
-  color: white
+  width: max-content;
+  color: white;
+  background-color: rgba(218, 119, 160, 0.616);
+  margin: 10px auto;
+  padding: 15px 30px;
+  border-radius: 15px;
+  /* border: 1px solid white; */
+}
+
+.spinbtn {
+  padding: 10px 30px;
 }
