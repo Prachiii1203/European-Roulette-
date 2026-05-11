@@ -1,28 +1,28 @@
 import { useState } from "react";
 
 function App() {
-  const [totalAmt, setTotalAmt] = useState(1000);
   const wheelNumbers = [];
   const Bet_type = [
     "Red",
-    "Black",
     "Odd",
-    "Even",
     "1st 12",
     "2nd 12",
     "3rd 12",
     "1-18/Lower",
     "19-36/Higer",
+    "Even",
+    "Black",
   ];
   const chipAmt = [100, 200, 500];
+  const RED_NUM = [
+    2, 3, 5, 7, 10, 11, 12, 14, 16, 17, 21, 23, 25, 28, 30, 31, 33, 35,
+  ];
+  const [totalAmt, setTotalAmt] = useState(1000);
   const [spinResult, setSpinResult] = useState(null);
   const [selectedBet, setSelectedBet] = useState("");
   const [msg, setMsg] = useState("");
   const [singlebet, setSinglebet] = useState(null);
   const [UserChipAmt, SetUserChipAmt] = useState(null);
-  const RED_NUM = [
-    2, 3, 5, 7, 10, 11, 12, 14, 16, 17, 21, 23, 25, 28, 30, 31, 33, 35,
-  ];
 
   for (let i = 1; i <= 36; i++) {
     wheelNumbers.push(i);
@@ -39,7 +39,8 @@ function App() {
     if (totalAmt < UserChipAmt) {
       return alert("You don't have sufficient balance");
     }
-    let val = Math.floor(Math.random() * wheelNumbers.length + 1);
+
+    let val = Math.floor(Math.random() * (wheelNumbers.length + 1));
     setSpinResult(val);
 
     switch (selectedBet) {
@@ -71,7 +72,7 @@ function App() {
         countBetAmt(val > 18 && val <= 36);
         break;
       case "single Bet":
-        countBetAmt(singlebet === Number(val), 35);
+        countBetAmt(singlebet === Number(val), 36);
         // setSinglebet(null);
         break;
       default:
@@ -109,13 +110,12 @@ function App() {
     <>
       <div>
         <h1>European Roulette Casino</h1>
-        <div>
-          <h3>Total Chip Balance : {totalAmt} ₹</h3>
-        </div>
+        <h3>Total Chip Balance : {totalAmt} ₹</h3>
         <div className="chipInfo">
           <div className="divChip">
             {chipAmt.map((chip, index) => (
               <button
+                id="chipbtn"
                 key={index}
                 onClick={(e) => {
                   SetUserChipAmt(Number(e.target.value));
@@ -134,7 +134,7 @@ function App() {
                 return;
               }}
             >
-              + Add more 1000 chip in balance
+              + Add 1000 chip in balance
             </button>
           </div>
           <div className="chipData">
@@ -189,7 +189,9 @@ function App() {
         >
           Spin
         </button>
-        <button onClick={clrVal}>Clear</button>
+        <button onClick={clrVal} id="clrbtn">
+          Clear
+        </button>
         <br />
 
         <div className={spinResult ? "resultDiv" : "NoresultDiv"}>

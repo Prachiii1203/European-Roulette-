@@ -64,7 +64,7 @@ body {
 
 button {
   margin: 5px;
-  padding: 10px 15px;
+  padding: 12px 15px;
   background-color: #1e7457c2;
   outline: none;
   border: 1px solid white;
@@ -88,8 +88,16 @@ button {
   justify-content: center;
 }
 
-.spinbtn {
-  padding: 10px 30px;
+.spinbtn, #clrbtn {
+  padding: 12px 35px;
+  background-color: rgb(7, 7, 139);
+  transition: 0.5s;
+  outline: none;
+  border: none;
+}
+
+.spinbtn:hover {
+  transform: translateY(-3px);
 }
 
 .chipInfo {
@@ -167,4 +175,31 @@ button {
 
 .blackbtn {
   background-color: rgba(0, 0, 0, 0.774);
+}
+
+.betTypes {
+  margin: 40px 50px 20px 50px;
+}
+
+.betTypes button {
+  /* background-color: p; */
+  padding: 15px 25px;
+  border: 2px dotted pink;
+  border-radius: 20px;
+}
+
+button:hover {
+  background-color: brown;
+}
+
+#chipbtn {
+  background-color: rgb(69, 42, 121);
+  padding: 15px;
+  border-radius: 30px;
+  /* outline: none; */
+  border: none;
+}
+
+#chipbtn:hover {
+  background-color: brown;
 }
