@@ -70,6 +70,7 @@ button {
   border: 1px solid white;
   border-radius: 5px;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .divbtn .otherbtn {
@@ -199,7 +200,7 @@ button:hover {
   background-color: brown;
 }
 
-#chipbtn {
+.chipbtn {
   background-color: rgb(69, 42, 121);
   padding: 15px;
   border-radius: 30px;
@@ -224,4 +225,21 @@ button:hover {
   font-weight: 600;
   word-spacing: 1px;
   color: black;
+}
+
+.selectedBet {
+  background-color: palevioletred;
+  border: none;
+}
+
+.selectedChipAmt {
+  background-color: #270f3a;
+}
+
+.inputPlayer {
+  padding: 8px;
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 5px;
+  margin: 5px auto;
 }
