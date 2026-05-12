@@ -78,9 +78,24 @@ button {
   width: 100%;
 }
 
+.redbtn {
+  background-color: rgba(255, 0, 0, 0.774);
+  border: none;
+}
+
+.blackbtn {
+  background-color: rgba(0, 0, 0, 0.774);
+  border: none;
+}
+
 .divbtn .Greenbtn {
   height: stretch;
   background-color: green;
+  border: none;
+}
+
+.divbtn .Greenbtn:hover {
+  background-color: brown;
 }
 
 .divbtn {
@@ -96,8 +111,9 @@ button {
   border: none;
 }
 
-.spinbtn:hover {
+.spinbtn:hover, #clrbtn:hover {
   transform: translateY(-3px);
+  background-color: brown;
 }
 
 .chipInfo {
@@ -127,7 +143,6 @@ button {
   margin: 10px auto;
   padding: 12px 30px;
   border-radius: 15px;
-  /* border: 1px solid white; */
 }
 
 .spinWinStatus {
@@ -139,7 +154,6 @@ button {
   margin: 10px auto;
   padding: 12px 30px;
   border-radius: 15px;
-  /* border: 1px solid white; */
 }
 
 .NoresultDiv {
@@ -169,13 +183,6 @@ button {
   font-size: 20px;
 }
 
-.redbtn {
-  background-color: rgba(255, 0, 0, 0.774);
-}
-
-.blackbtn {
-  background-color: rgba(0, 0, 0, 0.774);
-}
 
 .betTypes {
   margin: 40px 50px 20px 50px;
@@ -202,4 +209,19 @@ button:hover {
 
 #chipbtn:hover {
   background-color: brown;
+}
+
+.allbetdiv {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+}
+
+.add1kbtn {
+  background-color: rgb(216, 145, 12);
+  border: none;
+  font-weight: 600;
+  word-spacing: 1px;
+  color: black;
 }
