@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = ({ setPlayers }) => {
   const [noofUser, setNoOfuser] = useState(null);
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
 
   const addNoOfUser = (e) => {
     const no = e.target.value;
@@ -25,25 +27,28 @@ const Dashboard = ({ setPlayers }) => {
   const startGame = () => {
     if (noofUser >= 2 && noofUser <= 10) {
       setPlayers(noofUser);
+      navigate("/casino")
     }
   };
 
   return (
-    <div>
-      <label>Enter number of user</label>
-      <br />
-      <input
-        type="number"
-        value={noofUser}
-        className="inputPlayer"
-        onChange={addNoOfUser}
-        onKeyDown={preventInvalid}
-      />
-      <br />
-      {msg && <span style={{ color: "red", fontSize: "14px" }}>{msg}</span>}
-      <br />
-      <button onClick={startGame}>Start Game</button>
-    </div>
+    <>
+        <div className="userDashboard">
+          <label>Enter number of user</label>
+          <br />
+          <input
+            type="number"
+            value={noofUser}
+            className="inputPlayer"
+            onChange={addNoOfUser}
+            onKeyDown={preventInvalid}
+          />
+          <br />
+          {msg && <span style={{ color: "red", fontSize: "14px" }}>{msg}</span>}
+          <br />
+          <button onClick={startGame}>Start Game</button>
+        </div>
+    </>
   );
 };
 
