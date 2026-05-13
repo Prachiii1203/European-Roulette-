@@ -98,7 +98,7 @@ button {
 }
 
 .divbtn .Greenbtn:hover {
-  background-color: brown;
+  background-color: grey;
 }
 
 .divbtn {
@@ -232,12 +232,15 @@ button:hover {
 }
 
 .selectedBet {
-  background-color: palevioletred;
+  background-color: rgb(24, 6, 73);
   border: none;
 }
 
 .selectedChipAmt {
-  background-color: #270f3a;
+  background-color: #cb1e56;
+  padding: 15px;
+  border-radius: 30px;
+  border: none;
 }
 
 .inputPlayer {

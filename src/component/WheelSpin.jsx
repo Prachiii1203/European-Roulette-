@@ -111,7 +111,7 @@ function countBetAmt(resultcondition, bet, n, settotalCasinoAmt, setPlayers) {
         if (pre.id === bet.userId) {
           return {
             ...pre,
-            userBalance: pre.userBalance + winprice - bet.totalchip,
+            userBalance: pre.userBalance + winprice,
           };
         }
         return pre;
@@ -124,7 +124,7 @@ function countBetAmt(resultcondition, bet, n, settotalCasinoAmt, setPlayers) {
         if (pre.id === bet.userId) {
           return {
             ...pre,
-            userBalance: pre.userBalance - bet.totalchip,
+            userBalance: pre.userBalance,
           };
         }
         return pre;

@@ -62,6 +62,26 @@ function Casino({ playerno }) {
       alert("You don't have sufficient balance");
       return;
     }
+    const findUser = players.find((pbal) => {
+      if (pbal.id === activePlayer.id) {
+        return pbal;
+      }
+    });
+
+    if (findUser.userBalance < chip) {
+      alert("There is No sufficient amount");
+      return;
+    } else {
+      //amount id deducting but it should be after bet is selected
+      setPlayers((prev) =>
+        prev.map((prePlayer) => {
+          return prePlayer.id === activePlayer.id
+            ? { ...prePlayer, userBalance: prePlayer.userBalance - chip }
+            : prePlayer;
+        }),
+      );
+    }
+
     let res;
     const existBet = allbet.find((abet) => {
       if (
@@ -70,7 +90,11 @@ function Casino({ playerno }) {
         abet.singlebetVal === singleValue
       ) {
         return abet;
-      } else if (abet.userId === activePlayer.id && abet.betType === bet) {
+      } else if (
+        abet.userId === activePlayer.id &&
+        abet.betType === bet &&
+        singleValue === null
+      ) {
         return abet;
       }
     });
@@ -113,6 +137,7 @@ function Casino({ playerno }) {
       setSelectedBet("");
       SetUserChipAmt(null);
     }
+
     setActivePlayer((aplayer) => ({ ...aplayer, hasbetted: true }));
   };
 
@@ -130,18 +155,22 @@ function Casino({ playerno }) {
     return;
   };
 
-  const TooltipMsg = (bet) => {
-    let msg = "";
-    if (!UserChipAmt) {
-      msg = "Select Chip";
-    } else if (bet === "1st 12" || bet === "2nd 12" || bet === "3rd 12") {
-      msg = `Profilt : ${UserChipAmt * 3} , Loss : ${UserChipAmt}`;
-    } else if (bet === "single Bet") {
-      msg = `Profilt : ${UserChipAmt * 36} , Loss : ${UserChipAmt}`;
-    } else {
-      msg = `Profilt : ${UserChipAmt * 2} , Loss : ${UserChipAmt}`;
-    }
-    return msg;
+  // const TooltipMsg = (bet) => {
+  //   let msg = "";
+  //   if (!UserChipAmt) {
+  //     msg = "Select Chip";
+  //   } else if (bet === "1st 12" || bet === "2nd 12" || bet === "3rd 12") {
+  //     msg = `Profilt : ${UserChipAmt * 3} , Loss : ${UserChipAmt}`;
+  //   } else if (bet === "single Bet") {
+  //     msg = `Profilt : ${UserChipAmt * 36} , Loss : ${UserChipAmt}`;
+  //   } else {
+  //     msg = `Profilt : ${UserChipAmt * 2} , Loss : ${UserChipAmt}`;
+  //   }
+  //   return msg;
+  // };
+
+  const TooltipMsg = () => {
+    return "tooltip msg";
   };
 
   const gotoNextPlayer = () => {
@@ -188,8 +217,10 @@ function Casino({ playerno }) {
               {chipAmt.map((chip, index) => (
                 <button
                   className={
-                    allbet.find((am) => am.chipAmt === chip) ||
-                    UserChipAmt === chip
+                    allbet.find(
+                      (am) =>
+                        am.chipAmt === chip && am.userId === activePlayer.id,
+                    ) || UserChipAmt === chip
                       ? "selectedChipAmt"
                       : "chipbtn"
                   }
@@ -219,7 +250,10 @@ function Casino({ playerno }) {
               <Tooltip direction="top" content={TooltipMsg("single Bet")}>
                 <button
                   className={
-                    allbet.find((am) => am.singlebetVal === 0) || singlebet == 0
+                    allbet.find(
+                      (am) =>
+                        am.singlebetVal === 0 && am.userId === activePlayer.id,
+                    ) || singlebet == 0
                       ? "selectedBet"
                       : "Greenbtn"
                   }
@@ -243,7 +277,9 @@ function Casino({ playerno }) {
                   <button
                     className={
                       allbet.find(
-                        (am) => Number(am.singlebetVal) == Number(wno),
+                        (am) =>
+                          Number(am.singlebetVal) == Number(wno) &&
+                          am.userId === activePlayer.id,
                       ) || singlebet == wno
                         ? "selectedBet"
                         : RED_NUM.includes(Number(wno))
@@ -272,8 +308,10 @@ function Casino({ playerno }) {
                     value={bet_ty}
                     onClick={SelectBetType}
                     className={
-                      allbet.find((am) => am.betType == bet_ty) ||
-                      selectedBet === bet_ty
+                      allbet.find(
+                        (am) =>
+                          am.betType == bet_ty && am.userId === activePlayer.id,
+                      ) || selectedBet === bet_ty
                         ? "selectedBet"
                         : ""
                     }
@@ -337,19 +375,52 @@ function Casino({ playerno }) {
             {spinResult !== null && <p className="spinNo"> {spinResult}</p>}
           </div>
           <section className="allbetdiv">
-            {spinResult &&
-              allbet.map((abet, index) => (
-                <p key={index}>
-                  <span>
-                    {abet.betType} - Player {abet.userId} {abet.status}{" "}
-                    {abet.amt}
-                  </span>
-                  <br />
-                  <small>
-                    Player {abet.userId} betted {abet.totalchip}
-                  </small>
-                </p>
-              ))}
+            {spinResult && (
+              <table border={1}>
+                <tr>
+                  <th>Win</th>
+                  <th>Loss</th>
+                </tr>
+                <tr>
+                  <td>
+                    {allbet.map((abet, index) => (
+                      <>
+                        {abet.status === "Win" && (
+                          <p key={index}>
+                            <span>
+                              {abet.betType} - Player {abet.userId}{" "}
+                              {abet.status} {abet.amt}
+                            </span>
+                            <br />
+                            <small>
+                              Player {abet.userId} betted {abet.totalchip}
+                            </small>
+                          </p>
+                        )}
+                      </>
+                    ))}
+                  </td>
+                  <td>
+                    {allbet.map((abet, index) => (
+                      <>
+                        {abet.status === "Loss" && (
+                          <p key={index}>
+                            <span>
+                              {abet.betType} - Player {abet.userId}{" "}
+                              {abet.status} {abet.amt}
+                            </span>
+                            <br />
+                            <small>
+                              Player {abet.userId} betted {abet.totalchip}
+                            </small>
+                          </p>
+                        )}
+                      </>
+                    ))}
+                  </td>
+                </tr>
+              </table>
+            )}
             <small>
               The amount displaying after spin is the amount of bet + your win
               amount
