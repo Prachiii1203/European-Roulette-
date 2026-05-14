@@ -7,10 +7,12 @@
 .tooltip-box {
     position: absolute;
     padding: 5px 8px;
-    background-color: #333;
+    background-color: #4e2828;
     color: #fff;
     border-radius: 4px;
-    white-space: nowrap;
+    white-space: wrap;
+    width: 200%;
+    text-wrap: wrap;
     z-index: 10;
     font-size: small;
 }

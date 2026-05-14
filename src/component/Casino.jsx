@@ -2,24 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "./Tooltip";
 import WheelSpin from "./WheelSpin";
+import addMultipleBet from "./addMultipleBet";
+import SpinResult from "./SpinResult";
 
 function Casino({ playerno }) {
   const wheelNumbers = [];
-  const Bet_type = [
-    "Red",
-    "Odd",
-    "1st 12",
-    "2nd 12",
-    "3rd 12",
-    "1-18/Lower",
-    "19-36/Higer",
-    "Even",
-    "Black",
-  ];
+  const Bet_type = ["Red", "Odd", "1st 12", "2nd 12", "3rd 12", "1-18/Lower", "19-36/Higer", "Even", "Black"];
   const chipAmt = [100, 200, 500];
-  const RED_NUM = [
-    2, 3, 5, 7, 10, 11, 12, 14, 16, 17, 21, 23, 25, 28, 30, 31, 33, 35,
-  ];
+  const RED_NUM = [2, 3, 5, 7, 10, 11, 12, 14, 16, 17, 21, 23, 25, 28, 30, 31, 33, 35];
   const navigation = useNavigate();
   const [totalCasinoAmt, settotalCasinoAmt] = useState(100000);
   const [spinResult, setSpinResult] = useState(null);
@@ -31,7 +21,6 @@ function Casino({ playerno }) {
     Array.from({ length: playerno }, (_, i) => ({
       id: i + 1,
       userBalance: Math.floor(Math.random() * 7000) + 1000,
-      hasbetted: false,
     })),
   );
   for (let i = 1; i <= 36; i++) {
@@ -44,8 +33,20 @@ function Casino({ playerno }) {
       setSinglebet(null);
     }
     setSelectedBet(e.target.value);
-    addMultipleBet(e.target.value, UserChipAmt);
-    console.log(e.target.value);
+    addMultipleBet(
+      totalCasinoAmt,
+      players,
+      setPlayers,
+      activePlayer,
+      setActivePlayer,
+      allbet,
+      setAllBet,
+      setSinglebet,
+      setSelectedBet,
+      SetUserChipAmt,
+      e.target.value,
+      UserChipAmt,
+    );
   };
 
   const clrVal = () => {
@@ -57,94 +58,8 @@ function Casino({ playerno }) {
     setActivePlayer(players[0]);
   };
 
-  const addMultipleBet = (bet, chip, singleValue = null) => {
-    if (totalCasinoAmt < chip) {
-      alert("You don't have sufficient balance");
-      return;
-    }
-    const findUser = players.find((pbal) => {
-      if (pbal.id === activePlayer.id) {
-        return pbal;
-      }
-    });
-
-    if (findUser.userBalance < chip) {
-      alert("There is No sufficient amount");
-      return;
-    } else {
-      //amount id deducting but it should be after bet is selected
-      setPlayers((prev) =>
-        prev.map((prePlayer) => {
-          return prePlayer.id === activePlayer.id
-            ? { ...prePlayer, userBalance: prePlayer.userBalance - chip }
-            : prePlayer;
-        }),
-      );
-    }
-
-    let res;
-    const existBet = allbet.find((abet) => {
-      if (
-        abet.userId === activePlayer.id &&
-        abet.betType === bet &&
-        abet.singlebetVal === singleValue
-      ) {
-        return abet;
-      } else if (
-        abet.userId === activePlayer.id &&
-        abet.betType === bet &&
-        singleValue === null
-      ) {
-        return abet;
-      }
-    });
-
-    if (existBet && chip !== null) {
-      setAllBet((allprev) =>
-        allprev.map((abet) =>
-          abet === existBet
-            ? {
-                ...abet,
-                totalchip: abet.totalchip + chip,
-                betCount: abet.betCount + 1,
-              }
-            : abet,
-        ),
-      );
-    } else {
-      if (bet === "single Bet" && singleValue !== null && chip !== null) {
-        res = {
-          betType: bet,
-          chipAmt: chip,
-          totalchip: chip,
-          singlebetVal: singleValue,
-          userId: activePlayer.id,
-          betCount: 1,
-        };
-        setSinglebet(null);
-      } else if (bet !== "" && chip !== null) {
-        res = {
-          betType: bet,
-          chipAmt: chip,
-          totalchip: chip,
-          userId: activePlayer.id,
-          betCount: 1,
-        };
-      } else {
-        return;
-      }
-      setAllBet((allprev) => [...allprev, res]);
-      setSelectedBet("");
-      SetUserChipAmt(null);
-    }
-
-    setActivePlayer((aplayer) => ({ ...aplayer, hasbetted: true }));
-  };
-
   const chkspin = () => {
-    const allbetUserId = players.every((p) =>
-      allbet.some((abet) => abet.userId === p.id),
-    );
+    const allbetUserId = players.every((p) => allbet.some((abet) => abet.userId === p.id));
     return allbetUserId;
   };
 
@@ -155,28 +70,66 @@ function Casino({ playerno }) {
     return;
   };
 
-  // const TooltipMsg = (bet) => {
-  //   let msg = "";
-  //   if (!UserChipAmt) {
-  //     msg = "Select Chip";
-  //   } else if (bet === "1st 12" || bet === "2nd 12" || bet === "3rd 12") {
-  //     msg = `Profilt : ${UserChipAmt * 3} , Loss : ${UserChipAmt}`;
-  //   } else if (bet === "single Bet") {
-  //     msg = `Profilt : ${UserChipAmt * 36} , Loss : ${UserChipAmt}`;
-  //   } else {
-  //     msg = `Profilt : ${UserChipAmt * 2} , Loss : ${UserChipAmt}`;
-  //   }
-  //   return msg;
-  // };
+  const TooltipMsg = (btnval, no = null) => {
+    let msg = "";
+    let chkuser;
 
-  const TooltipMsg = () => {
-    return "tooltip msg";
+    if (btnval === "spin") {
+      if (allbet.length > 0) {
+        allbet.map((abet) => (msg += `Player ${abet.userId} has betted on ${abet.betType} X ${abet.betCount} `));
+      } else {
+        msg = "All Player Have to bet atleast once";
+      }
+    } else {
+      if (no !== null) {
+        chkuser = allbet.filter((fuser) => {
+          if (fuser.betType === "single Bet" && fuser.singlebetVal === no) {
+            return true;
+          } else if (fuser.betType === "1st 12" && fuser.betRange.includes(no)) {
+            return true;
+          } else if (fuser.betType === "2nd 12" && fuser.betRange.includes(no)) {
+            return true;
+          } else if (fuser.betType === "3rd 12" && fuser.betRange.includes(no)) {
+            return true;
+          } else if (fuser.betType === "1-18/Lower" && fuser.betRange.includes(no)) {
+            return true;
+          } else if (fuser.betType === "19-36/Higer" && fuser.betRange.includes(no)) {
+            return true;
+          } else if (fuser.betType === "Odd" && fuser.betRange.includes(no)) {
+            return true;
+          } else if (fuser.betType === "Even" && fuser.betRange.includes(no)) {
+            return true;
+          }
+          return false;
+        });
+      } else {
+        chkuser = allbet.filter((fuser) => fuser.betType === btnval);
+      }
+
+      if (chkuser.length === 0) {
+        msg = "No one has selected this Bet";
+        return msg;
+      }
+
+      chkuser.map((cu) => {
+        msg += `Player ${cu.userId} has betted ${cu.betType} X ${cu.betCount} `;
+      });
+    }
+
+    return msg;
   };
 
   const gotoNextPlayer = () => {
     setActivePlayer((prev) => {
       const nextPlayer = players.find((p) => p.id === prev.id + 1);
       return nextPlayer || prev;
+    });
+    console.log(allbet);
+  };
+  const gotoPrevPlayer = () => {
+    setActivePlayer((prev) => {
+      const prevPlayer = players.find((p) => p.id === prev.id - 1);
+      return prevPlayer || prev;
     });
   };
 
@@ -190,10 +143,11 @@ function Casino({ playerno }) {
             {players.map((p) => (
               <button
                 key={p.id}
+                className="showPlayer"
                 style={{
-                  backgroundColor:
-                    activePlayer.id === p.id ? "teal" : "#2b1e74c2",
+                  backgroundColor: activePlayer.id === p.id ? "teal" : "#2b1e74c2",
                   textAlign: "left",
+                  border: "none",
                 }}
               >
                 Player - {p.id}
@@ -202,32 +156,32 @@ function Casino({ playerno }) {
               </button>
             ))}
             <br />
-            {activePlayer.id <= players.length - 1 && (
-              <button
-                onClick={gotoNextPlayer}
-                disabled={!activePlayer.hasbetted}
-              >
-                {" "}
-                Next Player ▶
-              </button>
+            {!spinResult && (
+              <>
+                {activePlayer.id !== 1 && <button onClick={gotoPrevPlayer}> ◀ Previous Player</button>}
+                {activePlayer.id <= players.length - 1 && <button onClick={gotoNextPlayer}> Next Player ▶</button>}
+              </>
             )}
           </div>
           <section className="chipInfo">
             <div className="divChip">
               {chipAmt.map((chip, index) => (
                 <button
-                  className={
-                    allbet.find(
-                      (am) =>
-                        am.chipAmt === chip && am.userId === activePlayer.id,
-                    ) || UserChipAmt === chip
-                      ? "selectedChipAmt"
-                      : "chipbtn"
-                  }
+                  className={allbet.find((am) => am.chipAmt === chip && am.userId === activePlayer.id) || UserChipAmt === chip ? "selectedChipAmt" : "chipbtn"}
                   key={index}
                   onClick={(e) => {
                     SetUserChipAmt(Number(e.target.value));
                     addMultipleBet(
+                      totalCasinoAmt,
+                      players,
+                      setPlayers,
+                      activePlayer,
+                      setActivePlayer,
+                      allbet,
+                      setAllBet,
+                      setSinglebet,
+                      setSelectedBet,
+                      SetUserChipAmt,
                       selectedBet,
                       Number(e.target.value),
                       singlebet,
@@ -247,16 +201,9 @@ function Casino({ playerno }) {
           <hr />
           <section className="divbtn">
             <div className="btn0">
-              <Tooltip direction="top" content={TooltipMsg("single Bet")}>
+              <Tooltip direction="top" content={TooltipMsg("single Bet", 0)}>
                 <button
-                  className={
-                    allbet.find(
-                      (am) =>
-                        am.singlebetVal === 0 && am.userId === activePlayer.id,
-                    ) || singlebet == 0
-                      ? "selectedBet"
-                      : "Greenbtn"
-                  }
+                  className={allbet.find((am) => am.singlebetVal === 0 && am.userId === activePlayer.id) || singlebet == 0 ? "selectedBet" : "Greenbtn"}
                   style={{
                     height: "Stretch",
                     border: "none",
@@ -264,7 +211,21 @@ function Casino({ playerno }) {
                   onClick={() => {
                     setSelectedBet("single Bet");
                     setSinglebet(0);
-                    addMultipleBet("single Bet", UserChipAmt, 0);
+                    addMultipleBet(
+                      totalCasinoAmt,
+                      players,
+                      setPlayers,
+                      activePlayer,
+                      setActivePlayer,
+                      allbet,
+                      setAllBet,
+                      setSinglebet,
+                      setSelectedBet,
+                      SetUserChipAmt,
+                      "single Bet",
+                      UserChipAmt,
+                      0,
+                    );
                   }}
                 >
                   0{" "}
@@ -273,14 +234,11 @@ function Casino({ playerno }) {
             </div>
             <div className="otherbtn">
               {wheelNumbers.map((wno, index) => (
-                <Tooltip direction="top" content={TooltipMsg("single Bet")}>
+                <Tooltip direction="top" content={TooltipMsg("single Bet", wno)}>
                   <button
                     className={
-                      allbet.find(
-                        (am) =>
-                          Number(am.singlebetVal) == Number(wno) &&
-                          am.userId === activePlayer.id,
-                      ) || singlebet == wno
+                      allbet.find((am) => (Number(am.singlebetVal) == Number(wno) || am.betRange.includes(wno)) && am.userId === activePlayer.id) ||
+                      singlebet == wno
                         ? "selectedBet"
                         : RED_NUM.includes(Number(wno))
                           ? "redbtn"
@@ -290,7 +248,21 @@ function Casino({ playerno }) {
                     onClick={() => {
                       setSelectedBet("single Bet");
                       setSinglebet(wno);
-                      addMultipleBet("single Bet", UserChipAmt, wno);
+                      addMultipleBet(
+                        totalCasinoAmt,
+                        players,
+                        setPlayers,
+                        activePlayer,
+                        setActivePlayer,
+                        allbet,
+                        setAllBet,
+                        setSinglebet,
+                        setSelectedBet,
+                        SetUserChipAmt,
+                        "single Bet",
+                        UserChipAmt,
+                        wno,
+                      );
                     }}
                   >
                     {wno}
@@ -307,14 +279,7 @@ function Casino({ playerno }) {
                     key={index}
                     value={bet_ty}
                     onClick={SelectBetType}
-                    className={
-                      allbet.find(
-                        (am) =>
-                          am.betType == bet_ty && am.userId === activePlayer.id,
-                      ) || selectedBet === bet_ty
-                        ? "selectedBet"
-                        : ""
-                    }
+                    className={allbet.find((am) => am.betType == bet_ty && am.userId === activePlayer.id) || selectedBet === bet_ty ? "selectedBet" : ""}
                   >
                     {bet_ty}
                   </button>
@@ -329,36 +294,24 @@ function Casino({ playerno }) {
                   {abet.userId && <p>Player {abet.userId}</p>}
                   {abet.betType && (
                     <p>
-                      Bet Type : {abet.betType}{" "}
-                      {abet.betCount > 1 && <>X {abet.betCount}</>}{" "}
+                      Bet Type : {abet.betType} {abet.betCount > 1 && <>X {abet.betCount}</>}{" "}
                     </p>
                   )}
-                  {abet.betType === "single Bet" &&
-                    abet.singlebetVal !== null && (
-                      <p>Single Bet on : {abet.singlebetVal}</p>
-                    )}
+                  {abet.betType === "single Bet" && abet.singlebetVal !== null && <p>Single Bet on : {abet.singlebetVal}</p>}
                   {abet.totalchip && <p>betted amount : {abet.totalchip} ₹</p>}
                 </div>
               ))}
             </div>
           )}
-          <button
-            onClick={() =>
-              WheelSpin(
-                allbet,
-                RED_NUM,
-                setSpinResult,
-                setAllBet,
-                settotalCasinoAmt,
-                setPlayers,
-              )
-            }
-            className="spinbtn"
-            disabled={!chkspin()}
-          >
-            Spin
-          </button>
-
+          <Tooltip direction="top" content={TooltipMsg("spin")}>
+            <button
+              onClick={() => WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers)}
+              className="spinbtn"
+              disabled={!chkspin() || spinResult}
+            >
+              Spin
+            </button>
+          </Tooltip>
           <button onClick={clrVal} id="clrbtn">
             Clear
           </button>
@@ -371,61 +324,13 @@ function Casino({ playerno }) {
             Exit
           </button>
           <br />
-          <div className={spinResult ? "resultDiv" : "NoresultDiv"}>
-            {spinResult !== null && <p className="spinNo"> {spinResult}</p>}
-          </div>
-          <section className="allbetdiv">
-            {spinResult && (
-              <table border={1}>
-                <tr>
-                  <th>Win</th>
-                  <th>Loss</th>
-                </tr>
-                <tr>
-                  <td>
-                    {allbet.map((abet, index) => (
-                      <>
-                        {abet.status === "Win" && (
-                          <p key={index}>
-                            <span>
-                              {abet.betType} - Player {abet.userId}{" "}
-                              {abet.status} {abet.amt}
-                            </span>
-                            <br />
-                            <small>
-                              Player {abet.userId} betted {abet.totalchip}
-                            </small>
-                          </p>
-                        )}
-                      </>
-                    ))}
-                  </td>
-                  <td>
-                    {allbet.map((abet, index) => (
-                      <>
-                        {abet.status === "Loss" && (
-                          <p key={index}>
-                            <span>
-                              {abet.betType} - Player {abet.userId}{" "}
-                              {abet.status} {abet.amt}
-                            </span>
-                            <br />
-                            <small>
-                              Player {abet.userId} betted {abet.totalchip}
-                            </small>
-                          </p>
-                        )}
-                      </>
-                    ))}
-                  </td>
-                </tr>
-              </table>
-            )}
-            <small>
-              The amount displaying after spin is the amount of bet + your win
-              amount
-            </small>
-          </section>
+          <div className={spinResult ? "resultDiv" : "NoresultDiv"}>{spinResult !== null && <p className="spinNo"> {spinResult}</p>}</div>
+          {spinResult && (
+            <section className="allbetdiv">
+              <SpinResult allbet={allbet} />
+              <small>The amount displaying after spin is the amount of bet + your win amount</small>
+            </section>
+          )}
         </div>
       )}
     </>
