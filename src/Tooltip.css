@@ -10,10 +10,10 @@
     background-color: #4e2828;
     color: #fff;
     border-radius: 4px;
-    white-space: wrap;
-    width: 200%;
-    text-wrap: wrap;
-    z-index: 10;
+    white-space: nowrap;
+    /* width: 200%;
+    text-wrap: wrap; */
+    z-index: 5;
     font-size: small;
 }
 
@@ -21,7 +21,7 @@
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    margin-bottom: 8px;
+    /* margin-bottom: 4px; */
 }
 
 .tooltip-right {
