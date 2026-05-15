@@ -188,20 +188,29 @@ button {
   font-size: 20px;
 }
 
+.btn0>* {
+  height: stretch;
+}
+
 
 .betTypes {
   margin: 40px 50px 20px 50px;
 }
 
-.betTypes button {
-  /* background-color: sandybrown; */
+.betBtn {
+  background-color: rgb(39, 6, 99);
   padding: 15px 25px;
-  border: 2px dotted pink;
+  border-radius: 20px;
+}
+
+.selectedBet {
+  background-color: rgba(255, 166, 0, 0.849);
+  padding: 15px 25px;
   border-radius: 20px;
 }
 
 button:hover {
-  background-color: brown;
+  background-color: grey;
 }
 
 .chipbtn {
@@ -231,9 +240,12 @@ button:hover {
   /* color: black; */
 }
 
-.selectedBet {
+
+
+.selectedsingleBet {
   background-color: rgba(255, 166, 0, 0.849);
   border: none;
+  width: 90%;
 }
 
 .selectedChipAmt {
@@ -255,4 +267,30 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.btnclass {
+  display: flex;
+}
+
+.counterbtn {
+  border: none;
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+}
+
+.counterbtnDisable {
+  border: none;
+  background-color: rgba(43, 40, 40, 0.76);
+  color: white;
+  padding: 10px 20px;
+}
+
+.resultbtn{
+  background-color: black;
+  padding: 15px 30px;
+  border: 2px solid white;
+  font-size: 15px;
+  font-weight: 600;
 }

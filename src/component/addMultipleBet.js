@@ -75,6 +75,7 @@ const addMultipleBet = (
               ...abet,
               totalchip: abet.totalchip + chip,
               betCount: abet.betCount + 1,
+              allChip: [...abet.allChip, chip],
             }
           : abet,
       ),
@@ -89,6 +90,7 @@ const addMultipleBet = (
         userId: activePlayer.id,
         betCount: 1,
         betRange: betnos,
+        allChip: [chip],
       };
       setSinglebet(null);
     } else if (bet !== "" && chip !== null) {
@@ -99,6 +101,7 @@ const addMultipleBet = (
         userId: activePlayer.id,
         betCount: 1,
         betRange: betnos,
+        allChip: [chip],
       };
     } else {
       return;
@@ -107,6 +110,8 @@ const addMultipleBet = (
     setSelectedBet("");
     SetUserChipAmt(null);
   }
+  console.log(allbet);
+
   setPlayers((prev) =>
     prev.map((prePlayer) => {
       return prePlayer.id === activePlayer.id

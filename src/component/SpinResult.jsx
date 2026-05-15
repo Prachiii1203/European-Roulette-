@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SpinResult = ({ allbet }) => {
   const [resPlayer, setResPlayer] = useState([]);
+  const [msg, setMsg] = useState("Win");
 
-  const displaySpinResult = (res) => {
-    console.log(res);
-
-    return setResPlayer(allbet.filter((abet) => abet.status === res));
-  };
-
+  // const displaySpinResult = () => {
+  //   return );
+  // };
+  useEffect(() => setResPlayer(allbet.filter((abet) => abet.status === msg)), [msg]);
   return (
     <div>
       {" "}
-      <button onClick={() => displaySpinResult("Win")}>Win</button>
-      <button onClick={() => displaySpinResult("Loss")}>Loss</button>
+      <button className="resultbtn" onClick={() => setMsg("Win")}>
+        Win
+      </button>
+      <button className="resultbtn" onClick={() => setMsg("Loss")}>
+        Loss
+      </button>
       {resPlayer.length > 0 ? (
         resPlayer.map((abet, index) => (
           <>
@@ -29,7 +32,7 @@ const SpinResult = ({ allbet }) => {
           </>
         ))
       ) : (
-        <p>No One</p>
+        <p>No One {msg}</p>
       )}
     </div>
   );

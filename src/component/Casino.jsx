@@ -34,7 +34,6 @@ function Casino({ playerno }) {
       setSinglebet(null);
     }
     setSelectedBet(e.target.value);
-    // addMultipleBet(
   };
 
   const clrVal = () => {
@@ -129,6 +128,7 @@ function Casino({ playerno }) {
     });
     console.log(allbet);
   };
+
   const gotoPrevPlayer = () => {
     setActivePlayer((prev) => {
       const prevPlayer = players.find((p) => p.id === prev.id - 1);
@@ -136,27 +136,55 @@ function Casino({ playerno }) {
     });
   };
 
-  // const removeLastBet = () => {
-  //   const fixBankBalance = players.map((preplayer) => {
-  //     let addAmt = 0;
-  //     allbet.map((adduserbalance) => {
-  //       if (preplayer.id === adduserbalance.userId) {
-  //         addAmt += adduserbalance.totalchip;
-  //       }
-  //       return addAmt;
-  //     });
-  //     return { ...preplayer, userBalance: preplayer.userBalance + addAmt };
-  //   });
-  //   setPlayers(fixBankBalance);
-  //   const [...removelastelement] = allbet.slice(0, -1);
-  //   setAllBet(removelastelement);
-  // };
+  const removeChipBet = (chip, selectedBet, singlebet) => {
+    const updatedBet = allbet.map((bet) => {
+      if (bet.userId === activePlayer.id && bet.betType === selectedBet && (selectedBet !== "single Bet" || bet.singlebetVal === singlebet)) {
+        const chipExist = bet.allChip.includes(chip);
+
+        if (!chipExist) {
+          alert("This chip is not added on this bet");
+          return bet;
+        }
+
+        if (chipExist) {
+          const duplicateChip = [...bet.allChip];
+          const removeChipIndex = duplicateChip.lastIndexOf(chip);
+          duplicateChip.splice(removeChipIndex, 1);
+
+          return {
+            ...bet,
+            allChip: duplicateChip,
+            totalchip: bet.totalchip - chip,
+            betCount: bet.betCount - 1,
+          };
+        }
+      }
+
+      return bet;
+    });
+
+    const removeEmptyBet = updatedBet.filter((bet) => {
+      return bet.totalchip > 0;
+    });
+
+    setAllBet(removeEmptyBet);
+
+    const fixBankBalance = players.map((player) => (player.id === activePlayer.id ? { ...player, userBalance: player.userBalance + chip } : player));
+    setPlayers(fixBankBalance);
+  };
 
   return (
     <>
       {playerno > 0 && (
         <div>
-          <h1>European Roulette Casino : {totalCasinoAmt} ₹</h1>
+          <section className="chipInfo">
+            <h1>European Roulette Casino : {totalCasinoAmt} ₹</h1>
+            <div className="divChip">
+              <button className="add1kbtn" onClick={addCasinoMoney}>
+                + Add 1000 in casino
+              </button>
+            </div>
+          </section>
           <p>Total Player : {playerno}</p>
           <div className="playergrid">
             {players.map((p) => (
@@ -182,33 +210,42 @@ function Casino({ playerno }) {
               </>
             )}
           </div>
-          <section className="chipInfo">
-            <div className="divChip">
-              {/* {chipAmt.map((chip, index) => (
-                <button
-                  className={allbet.find((am) => am.chipAmt === chip && am.userId === activePlayer.id) || UserChipAmt === chip ? "selectedChipAmt" : "chipbtn"}
-                  key={index}
-                  onClick={(e) => {
-                    SetUserChipAmt(Number(e.target.value));
-                    // addMultipleBet(
-                  }}
-                  value={chip}
-                >
-                  {chip} ₹
-                </button>
-              ))} */}
-              {/* <TooltipData chipAmt={chipAmt} /> */}
-              <button className="add1kbtn" onClick={addCasinoMoney}>
-                + Add 1000 in casino
-              </button>
-            </div>
-          </section>
+
           <hr />
           <section className="divbtn">
             <div className="btn0">
-              <Tooltip direction="top" content={TooltipMsg("single Bet", 0)}>
+              <Tooltip
+                direction="top"
+                content={
+                  <>
+                    <TooltipData
+                      chipAmt={chipAmt}
+                      addMultipleBet={addMultipleBet}
+                      removeChipBet={removeChipBet}
+                      totalCasinoAmt={totalCasinoAmt}
+                      players={players}
+                      setPlayers={setPlayers}
+                      activePlayer={activePlayer}
+                      setActivePlayer={setActivePlayer}
+                      allbet={allbet}
+                      setAllBet={setAllBet}
+                      setSinglebet={setSinglebet}
+                      setSelectedBet={setSelectedBet}
+                      SetUserChipAmt={SetUserChipAmt}
+                      selectedBet={"single Bet"}
+                      singlebet={0}
+                    />
+                    <p>{TooltipMsg("single Bet", 0)}</p>
+                  </>
+                }
+              >
                 <button
-                  className={allbet.find((am) => am.singlebetVal === 0 && am.userId === activePlayer.id) || singlebet == 0 ? "selectedBet" : "Greenbtn"}
+                  className={
+                    allbet.find((am) => am.singlebetVal === 0 && am.userId === activePlayer.id)
+                      ? // || singlebet == 0
+                        "selectedsingleBet"
+                      : "Greenbtn"
+                  }
                   style={{
                     height: "Stretch",
                     border: "none",
@@ -216,7 +253,6 @@ function Casino({ playerno }) {
                   onClick={() => {
                     setSelectedBet("single Bet");
                     setSinglebet(0);
-                    // addMultipleBet(
                   }}
                 >
                   0{" "}
@@ -225,12 +261,37 @@ function Casino({ playerno }) {
             </div>
             <div className="otherbtn">
               {wheelNumbers.map((wno, index) => (
-                <Tooltip direction="top" content={TooltipMsg("single Bet", wno)}>
+                <Tooltip
+                  direction="top"
+                  content={
+                    <>
+                      <TooltipData
+                        chipAmt={chipAmt}
+                        addMultipleBet={addMultipleBet}
+                        removeChipBet={removeChipBet}
+                        totalCasinoAmt={totalCasinoAmt}
+                        players={players}
+                        setPlayers={setPlayers}
+                        activePlayer={activePlayer}
+                        setActivePlayer={setActivePlayer}
+                        allbet={allbet}
+                        setAllBet={setAllBet}
+                        setSinglebet={setSinglebet}
+                        setSelectedBet={setSelectedBet}
+                        SetUserChipAmt={SetUserChipAmt}
+                        selectedBet={"single Bet"}
+                        singlebet={wno}
+                      />
+                      <p>{TooltipMsg("single Bet", wno)}</p>
+                    </>
+                  }
+                >
                   <button
                     className={
-                      allbet.find((am) => (Number(am.singlebetVal) == Number(wno) || am.betRange.includes(wno)) && am.userId === activePlayer.id) ||
-                      singlebet == wno
-                        ? "selectedBet"
+                      allbet.find((am) => (Number(am.singlebetVal) == Number(wno) || am.betRange.includes(wno)) && am.userId === activePlayer.id)
+                        ? // ||
+                          // singlebet == wno
+                          "selectedsingleBet"
                         : RED_NUM.includes(Number(wno))
                           ? "redbtn"
                           : "blackbtn"
@@ -239,7 +300,6 @@ function Casino({ playerno }) {
                     onClick={() => {
                       setSelectedBet("single Bet");
                       setSinglebet(wno);
-                      // addMultipleBet(
                     }}
                   >
                     {wno}
@@ -251,12 +311,41 @@ function Casino({ playerno }) {
           <div className="betTypes">
             {Bet_type.map((bet_ty, index) => (
               <>
-                <Tooltip direction="top" content={<TooltipData chipAmt={chipAmt} />}>
+                <Tooltip
+                  direction="top"
+                  content={
+                    <>
+                      <TooltipData
+                        chipAmt={chipAmt}
+                        addMultipleBet={addMultipleBet}
+                        removeChipBet={removeChipBet}
+                        totalCasinoAmt={totalCasinoAmt}
+                        players={players}
+                        setPlayers={setPlayers}
+                        activePlayer={activePlayer}
+                        setActivePlayer={setActivePlayer}
+                        allbet={allbet}
+                        setAllBet={setAllBet}
+                        setSinglebet={setSinglebet}
+                        setSelectedBet={setSelectedBet}
+                        SetUserChipAmt={SetUserChipAmt}
+                        selectedBet={bet_ty}
+                        singlebet={null}
+                      />{" "}
+                      <p>{TooltipMsg(bet_ty)}</p>
+                    </>
+                  }
+                >
                   <button
                     key={index}
                     value={bet_ty}
                     onClick={SelectBetType}
-                    className={allbet.find((am) => am.betType == bet_ty && am.userId === activePlayer.id) || selectedBet === bet_ty ? "selectedBet" : ""}
+                    className={
+                      allbet.find((am) => am.betType == bet_ty && am.userId === activePlayer.id)
+                        ? // || selectedBet === bet_ty
+                          "selectedBet"
+                        : "betBtn"
+                    }
                   >
                     {bet_ty}
                   </button>
@@ -280,34 +369,12 @@ function Casino({ playerno }) {
               ))}
             </div>
           )}
-          {/* <button
-            onClick={() =>
-              addMultipleBet(
-                totalCasinoAmt,
-                players,
-                setPlayers,
-                activePlayer,
-                setActivePlayer,
-                allbet,
-                setAllBet,
-                setSinglebet,
-                setSelectedBet,
-                SetUserChipAmt,
-                selectedBet,
-                UserChipAmt,
-                singlebet ? singlebet : "",
-              )
-            }
-            id="clrbtn"
-          >
-            Place a Bet
-          </button>
-          <button id="clrbtn" onClick={removeLastBet}>
-            Remove Last bet
-          </button> */}
           <Tooltip direction="top" content={TooltipMsg("spin")}>
             <button
-              onClick={() => WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers)}
+              onClick={() => {
+                WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers);
+                setActivePlayer("");
+              }}
               className="spinbtn"
               disabled={!chkspin() || spinResult}
             >
