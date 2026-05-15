@@ -11,10 +11,12 @@
     color: #fff;
     border-radius: 4px;
     white-space: nowrap;
-    /* width: 200%;
-    text-wrap: wrap; */
     z-index: 5;
     font-size: small;
+}
+
+.tooltip-container:hover .betBtn ,.tooltip-container:hover .blackbtn,.tooltip-container:hover .redbtn,.tooltip-container:hover .Greenbtn {
+    background: rgba(255, 166, 0, 0.849);
 }
 
 .tooltip-top {

@@ -8,14 +8,8 @@ const Tooltip = ({ direction, content, children }) => {
   const hideTooltip = () => setVisible(false);
 
   return (
-    <div
-      className="tooltip-container"
-      onMouseEnter={showTooltip}
-      onMouseLeave={hideTooltip}
-    >
-      {visible && (
-        <div className={`tooltip-box tooltip-${direction}`}>{content}</div>
-      )}
+    <div className="tooltip-container" onMouseEnter={showTooltip} onMouseLeave={hideTooltip}>
+      {visible && <div className={`tooltip-box tooltip-${direction}`}>{content}</div>}
       {children}
     </div>
   );

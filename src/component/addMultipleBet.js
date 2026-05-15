@@ -72,11 +72,11 @@ const addMultipleBet = (
       allprev.map((abet) =>
         abet === existBet
           ? {
-              ...abet,
-              totalchip: abet.totalchip + chip,
-              betCount: abet.betCount + 1,
-              allChip: [...abet.allChip, chip],
-            }
+            ...abet,
+            totalchip: abet.totalchip + chip,
+            betCount: abet.betCount + 1,
+            allChip: [...abet.allChip, chip],
+          }
           : abet,
       ),
     );
@@ -116,9 +116,9 @@ const addMultipleBet = (
     prev.map((prePlayer) => {
       return prePlayer.id === activePlayer.id
         ? {
-            ...prePlayer,
-            userBalance: prePlayer.userBalance - chip,
-          }
+          ...prePlayer,
+          userBalance: prePlayer.userBalance - chip,
+        }
         : prePlayer;
     }),
   );

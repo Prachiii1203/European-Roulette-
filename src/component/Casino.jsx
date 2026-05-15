@@ -145,10 +145,10 @@ function Casino({ playerno }) {
       if (bet.userId === activePlayer.id && bet.betType === selectedBet && (selectedBet !== "single Bet" || bet.singlebetVal === singlebet)) {
         const chipExist = bet.allChip.includes(chip);
 
-        if (!chipExist) {
-          alert("This chip is not added on this bet");
-          return bet;
-        }
+        // if (!chipExist) {
+        //   alert("This chip is not added on this bet");
+        //   return bet;
+        // }
 
         if (chipExist) {
           const duplicateChip = [...bet.allChip];
@@ -196,7 +196,7 @@ function Casino({ playerno }) {
                 key={p.id}
                 className="showPlayer"
                 style={{
-                  backgroundColor: activePlayer.id === p.id ? "teal" : "#2b1e74c2",
+                  backgroundColor: activePlayer.id === p.id ? "teal" : "#260042d9",
                   textAlign: "left",
                   border: "none",
                 }}
@@ -207,11 +207,19 @@ function Casino({ playerno }) {
               </button>
             ))}
             <br />
-            {!spinResult && (
-              <>
-                {activePlayer.id !== 1 && <button onClick={gotoPrevPlayer}> ◀ Previous Player</button>}
-                {activePlayer.id <= players.length - 1 && <button onClick={gotoNextPlayer}> Next Player ▶</button>}
-              </>
+          </div>
+          <div className={spinResult ? "preNextbtnHide" : "preNextbtn"}>
+            {activePlayer.id !== 1 && (
+              <button id="clrbtn" onClick={gotoPrevPlayer}>
+                {" "}
+                ◀ Previous Player
+              </button>
+            )}
+            {activePlayer.id <= players.length - 1 && (
+              <button id="clrbtn" onClick={gotoNextPlayer}>
+                {" "}
+                Next Player ▶
+              </button>
             )}
           </div>
 
@@ -293,8 +301,7 @@ function Casino({ playerno }) {
                   <button
                     className={
                       allbet.find((am) => (Number(am.singlebetVal) == Number(wno) || am.betRange.includes(wno)) && am.userId === activePlayer.id)
-                        ? // ||
-                          // singlebet == wno
+                        ? // || singlebet == wno
                           "selectedsingleBet"
                         : RED_NUM.includes(Number(wno))
                           ? "redbtn"
@@ -397,13 +404,13 @@ function Casino({ playerno }) {
             Exit
           </button>
           <br />
-          <div className={spinResult ? "resultDiv" : "NoresultDiv"}>{spinResult !== null && <p className="spinNo"> {spinResult}</p>}</div>
-          {spinResult && (
-            <section className="allbetdiv">
+          <div className={spinResult ? "resultDiv" : "NoresultDiv"}>
+            {" "}
+            <p className="spinNo"> {spinResult}</p>
+    
               <SpinResult allbet={allbet} />
               <small>The amount displaying after spin is the amount of bet + your win amount</small>
-            </section>
-          )}
+          </div>
         </div>
       )}
     </>

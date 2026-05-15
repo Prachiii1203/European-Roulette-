@@ -4,9 +4,6 @@ const SpinResult = ({ allbet }) => {
   const [resPlayer, setResPlayer] = useState([]);
   const [msg, setMsg] = useState("Win");
 
-  // const displaySpinResult = () => {
-  //   return );
-  // };
   useEffect(() => setResPlayer(allbet.filter((abet) => abet.status === msg)), [msg]);
   return (
     <div>

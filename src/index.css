@@ -287,10 +287,31 @@ button:hover {
   padding: 10px 20px;
 }
 
-.resultbtn{
+.resultbtn {
   background-color: black;
   padding: 15px 30px;
   border: 2px solid white;
   font-size: 15px;
   font-weight: 600;
+}
+
+.playergrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.preNextbtnHide {
+  display: none;
+}
+
+.preNextbtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: max-content;
+  margin: 5px auto;
+}
+
+.movebtn{
+  background-color: black;
 }
