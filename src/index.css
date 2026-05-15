@@ -106,7 +106,8 @@ button {
   justify-content: center;
 }
 
-.spinbtn, #clrbtn {
+.spinbtn,
+#clrbtn {
   padding: 12px 35px;
   background-color: rgb(7, 7, 139);
   transition: 0.5s;
@@ -114,7 +115,8 @@ button {
   border: none;
 }
 
-.spinbtn:hover, #clrbtn:hover {
+.spinbtn:hover,
+#clrbtn:hover {
   transform: translateY(-3px);
   background-color: brown;
 }
@@ -271,6 +273,7 @@ button:hover {
 
 .btnclass {
   display: flex;
+  flex-direction: column;
 }
 
 .counterbtn {
@@ -312,6 +315,6 @@ button:hover {
   margin: 5px auto;
 }
 
-.movebtn{
+.movebtn {
   background-color: black;
 }

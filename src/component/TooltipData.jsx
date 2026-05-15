@@ -48,62 +48,76 @@ const TooltipData = ({
     <div>
       <p>Click on Chip to select</p>
       <div className="btnclass">
-        <button
-          className="counterbtn"
-          onClick={() => {
-            if (activeChip !== null) {
-              addMultipleBet(
-                totalCasinoAmt,
-                players,
-                setPlayers,
-                activePlayer,
-                setActivePlayer,
-                allbet,
-                setAllBet,
-                setSinglebet,
-                setSelectedBet,
-                SetUserChipAmt,
-                selectedBet,
-                activeChip,
-                singlebet,
-              );
-            }
-          }}
-        >
-          +
-        </button>
-
         {chipAmt.map((chip, index) => (
           <div key={index}>
             <button
-              className={activeChip === chip ? "selectedChipAmt" : "chipbtn"}
+              className="counterbtn"
+              onClick={() => {
+                setActiveChip(chip)
+                addMultipleBet(
+                  totalCasinoAmt,
+                  players,
+                  setPlayers,
+                  activePlayer,
+                  setActivePlayer,
+                  allbet,
+                  setAllBet,
+                  setSinglebet,
+                  setSelectedBet,
+                  SetUserChipAmt,
+                  selectedBet,
+                  chip,
+                  singlebet,
+                )
+              }
+              }
+            >
+              +
+            </button>
+            <button
+              // className={activeChip === chip ? "selectedChipAmt" : "chipbtn"}
               style={{ border: "none" }}
               onClick={() => {
                 setActiveChip(chip);
+
+                addMultipleBet(
+                  totalCasinoAmt,
+                  players,
+                  setPlayers,
+                  activePlayer,
+                  setActivePlayer,
+                  allbet,
+                  setAllBet,
+                  setSinglebet,
+                  setSelectedBet,
+                  SetUserChipAmt,
+                  selectedBet,
+                  chip,
+                  singlebet,
+                );
               }}
             >
               {chip} ₹{getChipCount(chip) > 0 && ` X ${getChipCount(chip)}`}
             </button>
+            <button
+              className={chipDisable ? "counterbtn" : "counterbtnDisable"}
+              disabled={!chipDisable}
+              onClick={() =>
+                removeChipBet(activeChip, selectedBet, singlebet)
+              }
+            >
+              -
+            </button>
           </div>
         ))}
 
-        <button
-          className={chipDisable ? "counterbtn" : "counterbtnDisable"}
-          disabled={!chipDisable}
-          onClick={() => {
-            if (activeChip !== null) {
-              removeChipBet(activeChip, selectedBet, singlebet);
-            }
-          }}
-        >
-          -
-        </button>
+
       </div>
 
       <div>
         <p>Total :{currBet?.totalchip || 0} ₹</p>
       </div>
-    </div>
+    </div >
   );
 };
 
