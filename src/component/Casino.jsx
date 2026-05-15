@@ -101,6 +101,10 @@ function Casino({ playerno }) {
             return true;
           } else if (fuser.betType === "Even" && fuser.betRange.includes(no)) {
             return true;
+          } else if (fuser.betType === "Red" && RED_NUM.includes(no)) {
+            return true;
+          } else if (fuser.betType === "Black" && !RED_NUM.includes(no)) {
+            return true;
           }
           return false;
         });
