@@ -12,10 +12,11 @@ const TooltipData = ({
   allbet,
   setAllBet,
   setSinglebet,
-  setSelectedBet,
+  setSelectedBet, 
   SetUserChipAmt,
   selectedBet,
   singlebet,
+  isPreviewMode
 }) => {
   const [activeChip, setActiveChip] = useState(null);
   // const [activeChip, setActiveChip] = useState(chipAmt[0]);
@@ -44,8 +45,9 @@ const TooltipData = ({
 
   const chipDisable = currBet?.allChip.includes(activeChip);
 
-  return (
-    <div>
+  return (<>
+
+    {!isPreviewMode && <div>
       <p>Click on Chip to select</p>
       <div className="btnclass">
         {chipAmt.map((chip, index) => (
@@ -117,7 +119,8 @@ const TooltipData = ({
       <div>
         <p>Total :{currBet?.totalchip || 0} ₹</p>
       </div>
-    </div >
+    </div >}
+  </>
   );
 };
 
