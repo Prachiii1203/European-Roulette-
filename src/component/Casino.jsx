@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "./Tooltip";
 import WheelSpin from "./WheelSpin";
-import addMultipleBet from "./addMultipleBet";
+import addMultipleBet, { TooltipMsg } from "./addMultipleBet";
 import SpinResult from "./SpinResult";
 import TooltipData from "./TooltipData";
 
@@ -54,9 +54,10 @@ function Casino({ playerno }) {
         return { ...preplayer, userBalance: preplayer.userBalance + addAmt };
       });
       setPlayers(fixBankBalance);
+      setIsPreviewMode(false);
     } else {
-      console.log("after spin");
       setSpinResult(null);
+      setCurrentRound((curr) => curr + 1);
     }
     setActivePlayer(players[0]);
     SetUserChipAmt(null);
@@ -77,65 +78,11 @@ function Casino({ playerno }) {
     return;
   };
 
-  const TooltipMsg = (btnval, no = null) => {
-    let msg = "";
-    let chkuser;
-
-    if (btnval === "spin") {
-      if (allbet.length > 0) {
-        allbet.map((abet) => (msg += `Player ${abet.userId} has betted on ${abet.betType} X ${abet.betCount} `));
-      } else {
-        msg = "All Player Have to bet atleast once";
-      }
-    } else {
-      if (no !== null) {
-        chkuser = allbet.filter((fuser) => {
-          if (fuser.betType === "single Bet" && fuser.singlebetVal === no) {
-            return true;
-          } else if (fuser.betType === "1st 12" && fuser.betRange.includes(no)) {
-            return true;
-          } else if (fuser.betType === "2nd 12" && fuser.betRange.includes(no)) {
-            return true;
-          } else if (fuser.betType === "3rd 12" && fuser.betRange.includes(no)) {
-            return true;
-          } else if (fuser.betType === "1-18/Lower" && fuser.betRange.includes(no)) {
-            return true;
-          } else if (fuser.betType === "19-36/Higer" && fuser.betRange.includes(no)) {
-            return true;
-          } else if (fuser.betType === "Odd" && fuser.betRange.includes(no)) {
-            return true;
-          } else if (fuser.betType === "Even" && fuser.betRange.includes(no)) {
-            return true;
-          } else if (fuser.betType === "Red" && RED_NUM.includes(no)) {
-            return true;
-          } else if (fuser.betType === "Black" && !RED_NUM.includes(no)) {
-            return true;
-          }
-          return false;
-        });
-      } else {
-        chkuser = allbet.filter((fuser) => fuser.betType === btnval);
-      }
-
-      if (chkuser.length === 0) {
-        msg = "No one has selected this Bet";
-        return msg;
-      }
-
-      chkuser.map((cu) => {
-        msg += `Player ${cu.userId} have betted ${cu.betType} X ${cu.betCount} - ${cu.totalchip}`;
-      });
-    }
-
-    return msg;
-  };
-
   const gotoNextPlayer = () => {
     setActivePlayer((prev) => {
       const nextPlayer = players.find((p) => p.id === prev.id + 1);
       return nextPlayer || prev;
     });
-    console.log(allbet);
   };
 
   const gotoPrevPlayer = () => {
@@ -170,7 +117,6 @@ function Casino({ playerno }) {
     const removeEmptyBet = updatedBet.filter((bet) => {
       return bet.totalchip > 0;
     });
-
     setAllBet(removeEmptyBet);
 
     const fixBankBalance = players.map((player) => (player.id === activePlayer.id ? { ...player, userBalance: player.userBalance + chip } : player));
@@ -201,11 +147,7 @@ function Casino({ playerno }) {
 
   const goToNextRound = () => {
     clrVal();
-    setCurrentRound((prev) => prev + 1);
     setSpinResult(null);
-    setAllBet([]);
-    setSelectedBet("");
-    setSinglebet(null);
     setIsPreviewMode(false);
     setSelectedHistoryRound(null);
     setActivePlayer(players[0]);
@@ -243,7 +185,7 @@ function Casino({ playerno }) {
             ))}
             <br />
           </div>
-          <div className={spinResult ? "preNextbtnHide" : "preNextbtn"}>
+          <div className={spinResult || isPreviewMode ? "preNextbtnHide" : "preNextbtn"}>
             {activePlayer.id !== 1 && (
               <button id="clrbtn" onClick={gotoPrevPlayer}>
                 {" "}
@@ -283,7 +225,7 @@ function Casino({ playerno }) {
                       singlebet={0}
                       isPreviewMode={isPreviewMode || selectedHistoryRound}
                     />
-                    <p>{TooltipMsg("single Bet", 0)}</p>
+                    <p>{TooltipMsg(allbet, RED_NUM, "single Bet", 0)}</p>
                   </>
                 }
               >
@@ -328,7 +270,7 @@ function Casino({ playerno }) {
                           singlebet={wno}
                           isPreviewMode={isPreviewMode || selectedHistoryRound}
                         />
-                        <p>{TooltipMsg("single Bet", wno)}</p>
+                        <p>{TooltipMsg(allbet, RED_NUM, "single Bet", wno)}</p>
                       </>
                     </>
                   }
@@ -390,7 +332,7 @@ function Casino({ playerno }) {
                         singlebet={null}
                         isPreviewMode={isPreviewMode || selectedHistoryRound}
                       />{" "}
-                      <p>{TooltipMsg(bet_ty)}</p>
+                      <p>{TooltipMsg(allbet, RED_NUM, bet_ty)}</p>
                     </>
                   }
                 >
@@ -432,7 +374,7 @@ function Casino({ playerno }) {
             </div>
           )}
           {!spinResult ? (
-            <Tooltip direction="top" content={TooltipMsg("spin")}>
+            <Tooltip direction="top" content={TooltipMsg(allbet, RED_NUM, "spin")}>
               <button className="spinbtn" disabled={!chkspin() || selectedHistoryRound} onClick={() => (!isPreviewMode ? betPreviewbtn() : spinWheelbtn())}>
                 {!isPreviewMode ? "Preview Bets" : "Spin"}
               </button>
@@ -469,13 +411,7 @@ function Casino({ playerno }) {
             Current Round
           </button>
           {roundHistory.map((round) => (
-            <button
-              key={round.roundNo}
-              id="clrbtn"
-              onClick={() => {
-                setSelectedHistoryRound(round);
-              }}
-            >
+            <button key={round.roundNo} id="clrbtn" onClick={() => setSelectedHistoryRound(round)}>
               Round {round.roundNo}
             </button>
           ))}
@@ -483,15 +419,12 @@ function Casino({ playerno }) {
         {selectedHistoryRound && (
           <div className="historyPreview">
             <h3>Preview of Round {selectedHistoryRound.roundNo}</h3>
-            <h6> {selectedHistoryRound.spinValue && <>Spin Result : {selectedHistoryRound.spinValue} </>}</h6>
+            <h4> {selectedHistoryRound.spinValue && <>Spin Result : {selectedHistoryRound.spinValue} </>}</h4>
             {selectedHistoryRound.allBets.map((bet, index) => (
               <div key={index}>
                 <p>Player {bet.userId}</p>
-
                 <p>Bet : {bet.betType}</p>
-
                 {bet.singlebetVal && <p>Number : {bet.singlebetVal}</p>}
-
                 <p>Total : {bet.totalchip} ₹</p>
                 <hr />
               </div>

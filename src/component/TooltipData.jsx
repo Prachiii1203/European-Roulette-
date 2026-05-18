@@ -82,7 +82,6 @@ const TooltipData = ({
                     
                     onClick={() => {
                       // setActiveChip(chip);
-
                       addMultipleBet(
                         totalCasinoAmt,
                         players,

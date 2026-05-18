@@ -72,11 +72,11 @@ const addMultipleBet = (
       allprev.map((abet) =>
         abet === existBet
           ? {
-            ...abet,
-            totalchip: abet.totalchip + chip,
-            betCount: abet.betCount + 1,
-            allChip: [...abet.allChip, chip],
-          }
+              ...abet,
+              totalchip: abet.totalchip + chip,
+              betCount: abet.betCount + 1,
+              allChip: [...abet.allChip, chip],
+            }
           : abet,
       ),
     );
@@ -110,15 +110,14 @@ const addMultipleBet = (
     setSelectedBet("");
     SetUserChipAmt(null);
   }
-  console.log(allbet);
 
   setPlayers((prev) =>
     prev.map((prePlayer) => {
       return prePlayer.id === activePlayer.id
         ? {
-          ...prePlayer,
-          userBalance: prePlayer.userBalance - chip,
-        }
+            ...prePlayer,
+            userBalance: prePlayer.userBalance - chip,
+          }
         : prePlayer;
     }),
   );
@@ -140,3 +139,58 @@ const loopOtherbet = (start, end, bet = null) => {
 };
 
 export default addMultipleBet;
+
+const TooltipMsgs = (allbet, rednum = null, btnval, no = null) => {
+  let msg = "";
+  let chkuser;
+
+  if (btnval === "spin") {
+    if (allbet.length > 0) {
+      allbet.map((abet) => (msg += `Player ${abet.userId} has betted on ${abet.betType} X ${abet.betCount} `));
+    } else {
+      msg = "All Player Have to bet atleast once";
+    }
+  } else {
+    if (no !== null) {
+      chkuser = allbet.filter((fuser) => {
+        if (fuser.betType === "single Bet" && fuser.singlebetVal === no) {
+          return true;
+        } else if (fuser.betType === "1st 12" && fuser.betRange.includes(no)) {
+          return true;
+        } else if (fuser.betType === "2nd 12" && fuser.betRange.includes(no)) {
+          return true;
+        } else if (fuser.betType === "3rd 12" && fuser.betRange.includes(no)) {
+          return true;
+        } else if (fuser.betType === "1-18/Lower" && fuser.betRange.includes(no)) {
+          return true;
+        } else if (fuser.betType === "19-36/Higer" && fuser.betRange.includes(no)) {
+          return true;
+        } else if (fuser.betType === "Odd" && fuser.betRange.includes(no)) {
+          return true;
+        } else if (fuser.betType === "Even" && fuser.betRange.includes(no)) {
+          return true;
+        } else if (fuser.betType === "Red" && rednum.includes(no)) {
+          return true;
+        } else if (fuser.betType === "Black" && !rednum.includes(no)) {
+          return true;
+        }
+        return false;
+      });
+    } else {
+      chkuser = allbet.filter((fuser) => fuser.betType === btnval);
+    }
+
+    if (chkuser.length === 0) {
+      msg = "No one has selected this Bet";
+      return msg;
+    }
+
+    chkuser.map((cu) => {
+      msg += `Player ${cu.userId} have betted ${cu.betType} X ${cu.betCount} - ${cu.totalchip}`;
+    });
+  }
+
+  return msg;
+};
+
+export const TooltipMsg = TooltipMsgs;
