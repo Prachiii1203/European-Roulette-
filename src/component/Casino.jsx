@@ -31,6 +31,9 @@ function Casino({ playerno }) {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [roundHistory, setRoundHistory] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
+
+  const [selectedHistoryRound, setSelectedHistoryRound] = useState(null);
+  const previewBets = selectedHistoryRound ? selectedHistoryRound.allBets : allbet;
   const SelectBetType = (e) => {
     if (e.target.value !== "single Bet") {
       setSinglebet(null);
@@ -120,7 +123,7 @@ function Casino({ playerno }) {
       }
 
       chkuser.map((cu) => {
-        msg += `Player ${cu.userId} has betted ${cu.betType} X ${cu.betCount} `;
+        msg += `Player ${cu.userId} have betted ${cu.betType} X ${cu.betCount} - ${cu.totalchip}`;
       });
     }
 
@@ -174,7 +177,7 @@ function Casino({ playerno }) {
     setPlayers(fixBankBalance);
   };
 
-  const handlePreview = () => {
+  const betPreviewbtn = () => {
     if (allbet.length === 0) {
       alert("Place atleast one bet");
       return;
@@ -183,17 +186,29 @@ function Casino({ playerno }) {
     setIsPreviewMode(true);
   };
 
-  const handleSpin = () => {
-    WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers);
+  const spinWheelbtn = () => {
+    const result = WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers);
 
     const roundData = {
       roundNo: currentRound,
       allBets: [...allbet],
+      spinValue: result,
     };
 
     setRoundHistory((prev) => [...prev, roundData]);
-    setCurrentRound((prev) => prev + 1);
     setIsPreviewMode(false);
+  };
+
+  const goToNextRound = () => {
+    clrVal();
+    setCurrentRound((prev) => prev + 1);
+    setSpinResult(null);
+    setAllBet([]);
+    setSelectedBet("");
+    setSinglebet(null);
+    setIsPreviewMode(false);
+    setSelectedHistoryRound(null);
+    setActivePlayer(players[0]);
   };
 
   return (
@@ -208,6 +223,7 @@ function Casino({ playerno }) {
               </button>
             </div>
           </section>
+          <h2>Round : {currentRound}</h2>
           <p>Total Player : {playerno}</p>
           <div className="playergrid">
             {players.map((p) => (
@@ -258,25 +274,21 @@ function Casino({ playerno }) {
                       setPlayers={setPlayers}
                       activePlayer={activePlayer}
                       setActivePlayer={setActivePlayer}
-                      allbet={allbet}
+                      allbet={previewBets}
                       setAllBet={setAllBet}
                       setSinglebet={setSinglebet}
                       setSelectedBet={setSelectedBet}
                       SetUserChipAmt={SetUserChipAmt}
                       selectedBet={"single Bet"}
                       singlebet={0}
+                      isPreviewMode={isPreviewMode || selectedHistoryRound}
                     />
                     <p>{TooltipMsg("single Bet", 0)}</p>
                   </>
                 }
               >
                 <button
-                  className={
-                    allbet.find((am) => am.singlebetVal === 0 && am.userId === activePlayer.id)
-                      ? // || singlebet == 0
-                        "selectedsingleBet"
-                      : "Greenbtn"
-                  }
+                  className={previewBets.find((am) => am.singlebetVal === 0 && am.userId === activePlayer.id) ? "selectedsingleBet" : "Greenbtn"}
                   style={{
                     height: "Stretch",
                     border: "none",
@@ -285,7 +297,7 @@ function Casino({ playerno }) {
                     setSelectedBet("single Bet");
                     setSinglebet(0);
                   }}
-                  disabled={isPreviewMode}
+                  disabled={isPreviewMode || selectedHistoryRound}
                 >
                   0{" "}
                 </button>
@@ -307,14 +319,14 @@ function Casino({ playerno }) {
                           setPlayers={setPlayers}
                           activePlayer={activePlayer}
                           setActivePlayer={setActivePlayer}
-                          allbet={allbet}
+                          allbet={previewBets}
                           setAllBet={setAllBet}
                           setSinglebet={setSinglebet}
                           setSelectedBet={setSelectedBet}
                           SetUserChipAmt={SetUserChipAmt}
                           selectedBet={"single Bet"}
                           singlebet={wno}
-                          isPreviewMode={isPreviewMode}
+                          isPreviewMode={isPreviewMode || selectedHistoryRound}
                         />
                         <p>{TooltipMsg("single Bet", wno)}</p>
                       </>
@@ -324,18 +336,17 @@ function Casino({ playerno }) {
                   <button
                     className={
                       isPreviewMode
-                        ? allbet.find((am) => {
-                            if (am.betType === "single Bet") {
-                              return Number(am.singlebetVal) === Number(wno);
+                        ? previewBets.find((am) => {
+                            if (am.betType === "single Bet" && am.singlebetVal === wno) {
+                              return true;
                             }
-
                             return am.betRange?.includes(wno);
                           })
-                          ? "previewSingleBet"
+                          ? "selectedsingleBet"
                           : RED_NUM.includes(Number(wno))
                             ? "redbtn"
                             : "blackbtn"
-                        : allbet.find((am) => (Number(am.singlebetVal) === Number(wno) || am.betRange?.includes(wno)) && am.userId === activePlayer.id)
+                        : previewBets.find((am) => (Number(am.singlebetVal) === Number(wno) || am.betRange?.includes(wno)) && am.userId === activePlayer.id)
                           ? "selectedsingleBet"
                           : RED_NUM.includes(Number(wno))
                             ? "redbtn"
@@ -346,7 +357,7 @@ function Casino({ playerno }) {
                       setSelectedBet("single Bet");
                       setSinglebet(wno);
                     }}
-                    disabled={isPreviewMode}
+                    disabled={isPreviewMode || selectedHistoryRound}
                   >
                     {wno}
                   </button>
@@ -370,13 +381,14 @@ function Casino({ playerno }) {
                         setPlayers={setPlayers}
                         activePlayer={activePlayer}
                         setActivePlayer={setActivePlayer}
-                        allbet={allbet}
+                        allbet={previewBets}
                         setAllBet={setAllBet}
                         setSinglebet={setSinglebet}
                         setSelectedBet={setSelectedBet}
                         SetUserChipAmt={SetUserChipAmt}
                         selectedBet={bet_ty}
                         singlebet={null}
+                        isPreviewMode={isPreviewMode || selectedHistoryRound}
                       />{" "}
                       <p>{TooltipMsg(bet_ty)}</p>
                     </>
@@ -388,14 +400,14 @@ function Casino({ playerno }) {
                     onClick={SelectBetType}
                     className={
                       isPreviewMode
-                        ? allbet.find((am) => am.betType === bet_ty)
+                        ? previewBets.find((am) => am.betType === bet_ty)
                           ? "selectedBet"
                           : "betBtn"
-                        : allbet.find((am) => am.betType === bet_ty && am.userId === activePlayer.id)
+                        : previewBets.find((am) => am.betType === bet_ty && am.userId === activePlayer.id)
                           ? "selectedBet"
                           : "betBtn"
                     }
-                    disabled={isPreviewMode}
+                    disabled={isPreviewMode || selectedHistoryRound}
                   >
                     {bet_ty}
                   </button>
@@ -403,7 +415,7 @@ function Casino({ playerno }) {
               </>
             ))}
           </div>
-          {!spinResult && (
+          {!spinResult && !selectedHistoryRound && (
             <div className="chipData">
               {allbet.map((abet, index) => (
                 <div key={index}>
@@ -419,21 +431,17 @@ function Casino({ playerno }) {
               ))}
             </div>
           )}
-          <Tooltip direction="top" content={TooltipMsg("spin")}>
-            <button
-              className="spinbtn"
-              disabled={!chkspin()}
-              onClick={() => {
-                if (!isPreviewMode) {
-                  handlePreview();
-                } else {
-                  handleSpin();
-                }
-              }}
-            >
-              {!isPreviewMode ? "Preview Bets" : "Spin"}
+          {!spinResult ? (
+            <Tooltip direction="top" content={TooltipMsg("spin")}>
+              <button className="spinbtn" disabled={!chkspin() || selectedHistoryRound} onClick={() => (!isPreviewMode ? betPreviewbtn() : spinWheelbtn())}>
+                {!isPreviewMode ? "Preview Bets" : "Spin"}
+              </button>
+            </Tooltip>
+          ) : (
+            <button className="spinbtn" onClick={goToNextRound}>
+              Next Round
             </button>
-          </Tooltip>
+          )}
           <button onClick={clrVal} id="clrbtn">
             Clear
           </button>
@@ -449,27 +457,47 @@ function Casino({ playerno }) {
           <div className={spinResult ? "resultDiv" : "NoresultDiv"}>
             {" "}
             <p className="spinNo"> {spinResult}</p>
-            <SpinResult allbet={allbet} />
+            <SpinResult allbet={previewBets} />
             <small>The amount displaying after spin is the amount of bet + your win amount</small>
           </div>
         </div>
       )}
       <section className="roundHistory">
         <h2>Game History</h2>
-
-        {roundHistory.map((round) => (
-          <div key={round.roundNo}>
-            <h3>Round {round.roundNo}</h3>
-            {round.allBets.map((bet, index) => (
+        <div className="historyBtns">
+          <button id="clrbtn" onClick={() => setSelectedHistoryRound(null)}>
+            Current Round
+          </button>
+          {roundHistory.map((round) => (
+            <button
+              key={round.roundNo}
+              id="clrbtn"
+              onClick={() => {
+                setSelectedHistoryRound(round);
+              }}
+            >
+              Round {round.roundNo}
+            </button>
+          ))}
+        </div>
+        {selectedHistoryRound && (
+          <div className="historyPreview">
+            <h3>Preview of Round {selectedHistoryRound.roundNo}</h3>
+            <h6> {selectedHistoryRound.spinValue && <>Spin Result : {selectedHistoryRound.spinValue} </>}</h6>
+            {selectedHistoryRound.allBets.map((bet, index) => (
               <div key={index}>
                 <p>Player {bet.userId}</p>
+
                 <p>Bet : {bet.betType}</p>
+
                 {bet.singlebetVal && <p>Number : {bet.singlebetVal}</p>}
+
                 <p>Total : {bet.totalchip} ₹</p>
+                <hr />
               </div>
             ))}
           </div>
-        ))}
+        )}
       </section>
     </>
   );
