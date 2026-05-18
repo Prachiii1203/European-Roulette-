@@ -322,3 +322,12 @@ button:hover {
 .movebtn {
   background-color: black;
 }
+
+.historyPreview>div {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: first baseline;
+  justify-content: space-between;
+  margin: 10px 25px;
+  text-align: left;
+}

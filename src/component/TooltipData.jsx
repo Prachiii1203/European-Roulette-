@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 const TooltipData = ({
   chipAmt,
   addMultipleBet,
@@ -18,7 +16,6 @@ const TooltipData = ({
   singlebet,
   isPreviewMode,
 }) => {
-  const [activeChip, setActiveChip] = useState(null);
 
   const currBet = allbet?.find((cbet) => {
     if (selectedBet === "single Bet" && cbet.betType === "single Bet" && cbet.userId === activePlayer.id && cbet.singlebetVal === singlebet) {
@@ -53,7 +50,6 @@ const TooltipData = ({
                   <button
                     className="counterbtn"
                     onClick={() => {
-                      setActiveChip(chip);
                       addMultipleBet(
                         totalCasinoAmt,
                         players,
@@ -75,7 +71,6 @@ const TooltipData = ({
                   </button>
                   <button
                     onClick={() => {
-                      setActiveChip(chip);
                       addMultipleBet(
                         totalCasinoAmt,
                         players,
