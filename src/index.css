@@ -94,7 +94,9 @@ button {
 .divbtn .Greenbtn {
   height: stretch;
   background-color: green;
-  /* border: none; */
+  height: "Stretch";
+  border: "none"
+    /* border: none; */
 }
 
 .divbtn .Greenbtn:hover {
@@ -248,6 +250,8 @@ button:hover {
   background-color: rgba(255, 166, 0, 0.849);
   border: none;
   width: 90%;
+  height: "Stretch";
+  border: "none",
 }
 
 .selectedChipAmt {

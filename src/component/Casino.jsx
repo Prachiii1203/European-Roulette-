@@ -125,12 +125,10 @@ function Casino({ playerno }) {
   };
 
   const betPreviewbtn = () => {
-    if (allbet.length === 0) {
-      alert("Place atleast one bet");
-      return;
-    }
+    if (allbet.length === 0) return alert("Place atleast one bet");
 
     setIsPreviewMode(true);
+    setActivePlayer("");
   };
 
   const spinWheelbtn = () => {
@@ -457,7 +455,7 @@ function Casino({ playerno }) {
           >
             Exit
           </button>
-          <br />
+          {/* <br /> */}
           <div className={spinResult ? "resultDiv" : "NoresultDiv"}>
             {" "}
             <p className="spinNo"> {spinResult}</p>

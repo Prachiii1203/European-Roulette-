@@ -14,7 +14,7 @@ const addMultipleBet = (
   singleValue = null,
 ) => {
   if (totalCasinoAmt < chip) {
-    alert("You don't have sufficient balance");
+    alert("Casino don't have sufficient Amount");
     return;
   }
 
@@ -25,7 +25,7 @@ const addMultipleBet = (
   });
 
   if (findUser.userBalance < chip) {
-    alert("There is No sufficient amount");
+    alert("You don't have sufficient balance");
     return;
   }
 

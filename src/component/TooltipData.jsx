@@ -73,11 +73,9 @@ const TooltipData = ({
                   >
                     +
                   </button>
-
                   <button
                     onClick={() => {
                       setActiveChip(chip);
-
                       addMultipleBet(
                         totalCasinoAmt,
                         players,
@@ -97,7 +95,6 @@ const TooltipData = ({
                   >
                     {chip} ₹{getChipCount(chip) > 0 && ` X ${getChipCount(chip)}`}
                   </button>
-
                   <button
                     className={chipExist ? "counterbtn" : "counterbtnDisable"}
                     disabled={!chipExist}
@@ -109,7 +106,6 @@ const TooltipData = ({
               );
             })}
           </div>
-
           <div>
             <p>Total : {currBet?.totalchip || 0} ₹</p>
           </div>
