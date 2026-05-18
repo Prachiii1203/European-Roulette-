@@ -147,11 +147,6 @@ function Casino({ playerno }) {
       if (bet.userId === activePlayer.id && bet.betType === selectedBet && (selectedBet !== "single Bet" || bet.singlebetVal === singlebet)) {
         const chipExist = bet.allChip.includes(chip);
 
-        // if (!chipExist) {
-        //   alert("This chip is not added on this bet");
-        //   return bet;
-        // }
-
         if (chipExist) {
           const duplicateChip = [...bet.allChip];
           const removeChipIndex = duplicateChip.lastIndexOf(chip);
@@ -189,25 +184,15 @@ function Casino({ playerno }) {
   };
 
   const handleSpin = () => {
-    WheelSpin(
-      allbet,
-      RED_NUM,
-      setSpinResult,
-      setAllBet,
-      settotalCasinoAmt,
-      setPlayers,
-    );
+    WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers);
 
     const roundData = {
       roundNo: currentRound,
       allBets: [...allbet],
-      playedAt: new Date().toLocaleTimeString(),
     };
 
     setRoundHistory((prev) => [...prev, roundData]);
-
     setCurrentRound((prev) => prev + 1);
-
     setIsPreviewMode(false);
   };
 
@@ -289,7 +274,7 @@ function Casino({ playerno }) {
                   className={
                     allbet.find((am) => am.singlebetVal === 0 && am.userId === activePlayer.id)
                       ? // || singlebet == 0
-                      "selectedsingleBet"
+                        "selectedsingleBet"
                       : "Greenbtn"
                   }
                   style={{
@@ -330,7 +315,6 @@ function Casino({ playerno }) {
                           selectedBet={"single Bet"}
                           singlebet={wno}
                           isPreviewMode={isPreviewMode}
-
                         />
                         <p>{TooltipMsg("single Bet", wno)}</p>
                       </>
@@ -338,32 +322,25 @@ function Casino({ playerno }) {
                   }
                 >
                   <button
-
                     className={
                       isPreviewMode
                         ? allbet.find((am) => {
-                          if (am.betType === "single Bet") {
-                            return Number(am.singlebetVal) === Number(wno);
-                          }
+                            if (am.betType === "single Bet") {
+                              return Number(am.singlebetVal) === Number(wno);
+                            }
 
-                          return am.betRange?.includes(wno);
-                        })
+                            return am.betRange?.includes(wno);
+                          })
                           ? "previewSingleBet"
                           : RED_NUM.includes(Number(wno))
                             ? "redbtn"
                             : "blackbtn"
-                        : allbet.find(
-                          (am) =>
-                            (Number(am.singlebetVal) === Number(wno) ||
-                              am.betRange?.includes(wno)) &&
-                            am.userId === activePlayer.id
-                        )
+                        : allbet.find((am) => (Number(am.singlebetVal) === Number(wno) || am.betRange?.includes(wno)) && am.userId === activePlayer.id)
                           ? "selectedsingleBet"
                           : RED_NUM.includes(Number(wno))
                             ? "redbtn"
                             : "blackbtn"
                     }
-
                     key={index}
                     onClick={() => {
                       setSelectedBet("single Bet");
@@ -414,11 +391,7 @@ function Casino({ playerno }) {
                         ? allbet.find((am) => am.betType === bet_ty)
                           ? "selectedBet"
                           : "betBtn"
-                        : allbet.find(
-                          (am) =>
-                            am.betType === bet_ty &&
-                            am.userId === activePlayer.id
-                        )
+                        : allbet.find((am) => am.betType === bet_ty && am.userId === activePlayer.id)
                           ? "selectedBet"
                           : "betBtn"
                     }
@@ -476,7 +449,6 @@ function Casino({ playerno }) {
           <div className={spinResult ? "resultDiv" : "NoresultDiv"}>
             {" "}
             <p className="spinNo"> {spinResult}</p>
-
             <SpinResult allbet={allbet} />
             <small>The amount displaying after spin is the amount of bet + your win amount</small>
           </div>
@@ -488,19 +460,11 @@ function Casino({ playerno }) {
         {roundHistory.map((round) => (
           <div key={round.roundNo}>
             <h3>Round {round.roundNo}</h3>
-
-            <small>{round.playedAt}</small>
-
             {round.allBets.map((bet, index) => (
               <div key={index}>
                 <p>Player {bet.userId}</p>
-
                 <p>Bet : {bet.betType}</p>
-
-                {bet.singlebetVal !== null && (
-                  <p>Number : {bet.singlebetVal}</p>
-                )}
-
+                {bet.singlebetVal && <p>Number : {bet.singlebetVal}</p>}
                 <p>Total : {bet.totalchip} ₹</p>
               </div>
             ))}
