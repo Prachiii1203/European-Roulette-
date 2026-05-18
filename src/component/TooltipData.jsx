@@ -18,22 +18,21 @@ const TooltipData = ({
   singlebet,
   isPreviewMode,
 }) => {
-  // const [activeChip, setActiveChip] = useState(null);
+  const [activeChip, setActiveChip] = useState(null);
 
   const currBet = allbet?.find((cbet) => {
-    if (selectedBet === "single Bet" && cbet.userId === activePlayer.id && cbet.singlebetVal === singlebet) {
+    if (selectedBet === "single Bet" && cbet.betType === "single Bet" && cbet.userId === activePlayer.id && cbet.singlebetVal === singlebet) {
       return true;
-    } else if (selectedBet === cbet.betType && cbet.userId === activePlayer.id) {
+    } else if (selectedBet === cbet.betType && cbet.userId === activePlayer.id && cbet.betType !== "single Bet") {
       return true;
     }
-
     return false;
   });
 
   const getChipCount = (chip) => {
     let count = 0;
 
-    currBet?.allChip?.forEach((c) => {
+    currBet?.allChip?.map((c) => {
       if (c === chip) {
         count++;
       }
@@ -46,18 +45,15 @@ const TooltipData = ({
     <>
       {!isPreviewMode && (
         <div>
-          <p>Click on Chip to select</p>
-
           <div className="btnclass">
             {chipAmt.map((chip, index) => {
               const chipExist = currBet?.allChip?.includes(chip);
-
               return (
                 <div key={index}>
                   <button
                     className="counterbtn"
                     onClick={() => {
-                      // setActiveChip(chip);
+                      setActiveChip(chip);
                       addMultipleBet(
                         totalCasinoAmt,
                         players,
@@ -79,9 +75,9 @@ const TooltipData = ({
                   </button>
 
                   <button
-                    
                     onClick={() => {
-                      // setActiveChip(chip);
+                      setActiveChip(chip);
+
                       addMultipleBet(
                         totalCasinoAmt,
                         players,
