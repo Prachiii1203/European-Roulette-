@@ -1,18 +1,4 @@
-const addMultipleBet = (
-  totalCasinoAmt,
-  players,
-  setPlayers,
-  activePlayer,
-  setActivePlayer,
-  allbet,
-  setAllBet,
-  setSinglebet,
-  setSelectedBet,
-  SetUserChipAmt,
-  bet,
-  chip,
-  singleValue = null,
-) => {
+const addMultipleBet = (totalCasinoAmt, players, setPlayers, activePlayer, setActivePlayer, allbet, setAllBet, setSinglebet, setSelectedBet, SetUserChipAmt, bet, chip, singleValue = null) => {
   if (totalCasinoAmt < chip) {
     alert("Casino don't have sufficient Amount");
     return;
@@ -140,7 +126,7 @@ const loopOtherbet = (start, end, bet = null) => {
 
 export default addMultipleBet;
 
-const TooltipMsgs = (allbet, rednum , btnval, no = null) => {
+const TooltipMsgs = (allbet, rednum, btnval, no = null) => {
   let msg = "";
   let chkuser;
 
@@ -186,7 +172,7 @@ const TooltipMsgs = (allbet, rednum , btnval, no = null) => {
     }
 
     chkuser.map((cu) => {
-      msg += `Player ${cu.userId} have betted ${cu.betType} X ${cu.betCount} - ${cu.totalchip}`;
+      msg += `Player ${cu.userId} have betted ${cu.betType} X ${cu.betCount} - ${cu.totalchip}\n`;
     });
   }
 

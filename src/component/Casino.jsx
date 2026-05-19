@@ -21,6 +21,7 @@ function Casino({ playerno }) {
   const [players, setPlayers] = useState(() =>
     Array.from({ length: playerno }, (_, i) => ({
       id: i + 1,
+      // uniqueid: crypto.randomUUID(),
       userBalance: Math.floor(Math.random() * 7000) + 1000,
     })),
   );
@@ -34,6 +35,7 @@ function Casino({ playerno }) {
 
   const [selectedHistoryRound, setSelectedHistoryRound] = useState(null);
   const previewBets = selectedHistoryRound ? selectedHistoryRound.allBets : allbet;
+
   const SelectBetType = (e) => {
     if (e.target.value !== "single Bet") {
       setSinglebet(null);
@@ -82,17 +84,14 @@ function Casino({ playerno }) {
   };
 
   const gotoNextPlayer = () => {
-    setActivePlayer((prev) => {
-      const nextPlayer = players.find((p) => p.id === prev.id + 1);
-      return nextPlayer || prev;
-    });
+    const currentPlayer = players.findIndex((p) => p.id === activePlayer.id);
+    setActivePlayer(players[currentPlayer + 1]);
   };
 
   const gotoPrevPlayer = () => {
-    setActivePlayer((prev) => {
-      const prevPlayer = players.find((p) => p.id === prev.id - 1);
-      return prevPlayer || prev;
-    });
+    const currentPlayer = players.findIndex((p) => p.id === activePlayer.id);
+
+    setActivePlayer(players[currentPlayer - 1]);
   };
 
   const removeChipBet = (chip, selectedBet, singlebet) => {
@@ -142,19 +141,18 @@ function Casino({ playerno }) {
   };
 
   const spinWheelbtn = () => {
-    const result = WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers);
+    WheelSpin(allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt, setPlayers);
+  };
 
+  const goToNextRound = () => {
     const roundData = {
       roundNo: currentRound,
       allBets: [...allbet],
-      spinValue: result,
+      spinValue: spinResult,
     };
 
     setRoundHistory((prev) => [...prev, roundData]);
     setIsPreviewMode(false);
-  };
-
-  const goToNextRound = () => {
     clrVal();
     setSpinResult(null);
     setIsPreviewMode(false);
@@ -162,6 +160,42 @@ function Casino({ playerno }) {
     setActivePlayer(players[0]);
   };
 
+  const leaveGame = (id) => {
+    if (activePlayer.id === id) {
+      if (players.length - 1 > 0) {
+        const removedPlayer = players.filter((play) => play.id !== activePlayer.id);
+        setPlayers(removedPlayer);
+        // const removebet = allbet.filter((bets) => bets.userId !== id);
+        // setAllBet(removebet);
+        localStorage.setItem("players", removedPlayer.length);
+        const currentIndex = players.findIndex((p) => p.id === activePlayer.id);
+        players.length - 1 > currentIndex ? setActivePlayer(players[currentIndex + 1]) : setActivePlayer(players[0]);
+      } else {
+        navigation("/");
+      }
+    } else {
+      alert("Only Active Player can Leave itself");
+    }
+  };
+
+  const addPlayer = () => {
+    const findmaxVal = Math.max(...players.map((p) => p.id));
+    if (players.length < 10) {
+      const newPlayer = { id: findmaxVal + 1, userBalance: Math.floor(Math.random() * 7000) + 1000 };
+      // uniqueid: crypto.randomUUID(),
+      setPlayers((prePlayer) => [...prePlayer, newPlayer]);
+      localStorage.setItem("players", players.length + 1);
+    } else {
+      return alert("Maximum player exceed");
+    }
+  };
+
+  const disableLeave = (id) => {
+    const checkPlayerbet = allbet.find((abet) => abet.userId === id);
+    console.log(checkPlayerbet);
+
+    return checkPlayerbet;
+  };
   return (
     <>
       {playerno > 0 && (
@@ -175,10 +209,14 @@ function Casino({ playerno }) {
             </div>
           </section>
           <h2>Round : {currentRound}</h2>
-          <p>Total Player : {playerno}</p>
+          <p>Total Player : {players.length}</p>
+          {console.log(players)}
+          <button onClick={addPlayer} disabled={isPreviewMode || selectedHistoryRound || players.length >= 10} className="addPlayer">
+            + Add Player
+          </button>
           <div className="playergrid">
             {players.map((p) => (
-              <button
+              <div
                 key={p.id}
                 className="showPlayer"
                 style={{
@@ -187,21 +225,23 @@ function Casino({ playerno }) {
                   border: "none",
                 }}
               >
-                Player - {p.id}
-                <br />
-                Balance - {p.userBalance}
-              </button>
+                <p>Player - {p.id}</p>
+                <p>Balance - {p.userBalance}</p>
+                <button className="leavebtn" onClick={() => leaveGame(p.id)} disabled={disableLeave(p.id)}>
+                  Leave Game
+                </button>
+              </div>
             ))}
             <br />
           </div>
           <div className={spinResult || isPreviewMode ? "preNextbtnHide" : "preNextbtn"}>
-            {activePlayer.id !== 1 && (
+            {players.findIndex((p) => p.id === activePlayer.id) > 0 && (
               <button id="clrbtn" onClick={gotoPrevPlayer}>
                 {" "}
                 ◀ Previous Player
               </button>
             )}
-            {activePlayer.id <= players.length - 1 && (
+            {players.findIndex((p) => p.id === activePlayer.id) < players.length - 1 && (
               <button id="clrbtn" onClick={gotoNextPlayer}>
                 {" "}
                 Next Player ▶
@@ -216,7 +256,7 @@ function Casino({ playerno }) {
                 content={
                   <>
                     <TooltipData chipAmt={chipAmt} addMultipleBet={addMultipleBet} removeChipBet={removeChipBet} totalCasinoAmt={totalCasinoAmt} players={players} setPlayers={setPlayers} activePlayer={activePlayer} setActivePlayer={setActivePlayer} allbet={previewBets} setAllBet={setAllBet} setSinglebet={setSinglebet} setSelectedBet={setSelectedBet} SetUserChipAmt={SetUserChipAmt} selectedBet={"single Bet"} singlebet={0} isPreviewMode={isPreviewMode || selectedHistoryRound} />
-                    <p>{TooltipMsg(previewBets, RED_NUM, "single Bet", 0)}</p>
+                    <p style={{ whiteSpace: " pre-line" }}>{TooltipMsg(previewBets, RED_NUM, "single Bet", 0)}</p>
                   </>
                 }
               >
@@ -239,13 +279,12 @@ function Casino({ playerno }) {
             <div className="otherbtn">
               {wheelNumbers.map((wno, index) => (
                 <Tooltip
+                  key={index}
                   direction="top"
                   content={
                     <>
-                      <>
-                        <TooltipData chipAmt={chipAmt} addMultipleBet={addMultipleBet} removeChipBet={removeChipBet} totalCasinoAmt={totalCasinoAmt} players={players} setPlayers={setPlayers} activePlayer={activePlayer} setActivePlayer={setActivePlayer} allbet={previewBets} setAllBet={setAllBet} setSinglebet={setSinglebet} setSelectedBet={setSelectedBet} SetUserChipAmt={SetUserChipAmt} selectedBet="single Bet" singlebet={wno} isPreviewMode={isPreviewMode || selectedHistoryRound} />
-                        <p>{TooltipMsg(previewBets, RED_NUM, "single Bet", wno)}</p>
-                      </>
+                      <TooltipData chipAmt={chipAmt} addMultipleBet={addMultipleBet} removeChipBet={removeChipBet} totalCasinoAmt={totalCasinoAmt} players={players} setPlayers={setPlayers} activePlayer={activePlayer} setActivePlayer={setActivePlayer} allbet={previewBets} setAllBet={setAllBet} setSinglebet={setSinglebet} setSelectedBet={setSelectedBet} SetUserChipAmt={SetUserChipAmt} selectedBet="single Bet" singlebet={wno} isPreviewMode={isPreviewMode || selectedHistoryRound} />
+                      <p style={{ whiteSpace: " pre-line" }}>{TooltipMsg(previewBets, RED_NUM, "single Bet", wno)}</p>
                     </>
                   }
                 >
@@ -268,7 +307,6 @@ function Casino({ playerno }) {
                             ? "redbtn"
                             : "blackbtn"
                     }
-                    key={index}
                     onClick={() => {
                       setSelectedBet("single Bet");
                       setSinglebet(wno);
@@ -283,21 +321,20 @@ function Casino({ playerno }) {
           </section>
           <div className="betTypes">
             {Bet_type.map((bet_ty, index) => (
-              <>
-                <Tooltip
-                  direction="top"
-                  content={
-                    <>
-                      <TooltipData chipAmt={chipAmt} addMultipleBet={addMultipleBet} removeChipBet={removeChipBet} totalCasinoAmt={totalCasinoAmt} players={players} setPlayers={setPlayers} activePlayer={activePlayer} setActivePlayer={setActivePlayer} allbet={previewBets} setAllBet={setAllBet} setSinglebet={setSinglebet} setSelectedBet={setSelectedBet} SetUserChipAmt={SetUserChipAmt} selectedBet={bet_ty} singlebet={null} isPreviewMode={isPreviewMode || selectedHistoryRound} />
-                      <p>{TooltipMsg(previewBets, RED_NUM, bet_ty)}</p>
-                    </>
-                  }
-                >
-                  <button key={index} value={bet_ty} onClick={SelectBetType} className={isPreviewMode || selectedHistoryRound ? (previewBets.find((am) => am.betType === bet_ty) ? "selectedBet" : "betBtn") : previewBets.find((am) => am.betType === bet_ty && am.userId === activePlayer.id) ? "selectedBet" : "betBtn"} disabled={isPreviewMode || selectedHistoryRound}>
-                    {bet_ty}
-                  </button>
-                </Tooltip>
-              </>
+              <Tooltip
+                key={index}
+                direction="top"
+                content={
+                  <>
+                    <TooltipData chipAmt={chipAmt} addMultipleBet={addMultipleBet} removeChipBet={removeChipBet} totalCasinoAmt={totalCasinoAmt} players={players} setPlayers={setPlayers} activePlayer={activePlayer} setActivePlayer={setActivePlayer} allbet={previewBets} setAllBet={setAllBet} setSinglebet={setSinglebet} setSelectedBet={setSelectedBet} SetUserChipAmt={SetUserChipAmt} selectedBet={bet_ty} singlebet={null} isPreviewMode={isPreviewMode || selectedHistoryRound} />
+                    <p style={{ whiteSpace: " pre-line" }}>{TooltipMsg(previewBets, RED_NUM, bet_ty)}</p>
+                  </>
+                }
+              >
+                <button key={index} value={bet_ty} onClick={SelectBetType} className={isPreviewMode || selectedHistoryRound ? (previewBets.find((am) => am.betType === bet_ty) ? "selectedBet" : "betBtn") : previewBets.find((am) => am.betType === bet_ty && am.userId === activePlayer.id) ? "selectedBet" : "betBtn"} disabled={isPreviewMode || selectedHistoryRound}>
+                  {bet_ty}
+                </button>
+              </Tooltip>
             ))}
           </div>
           {!spinResult && !selectedHistoryRound && (
@@ -317,7 +354,7 @@ function Casino({ playerno }) {
             </div>
           )}
           {!spinResult ? (
-            <Tooltip direction="top" content={TooltipMsg(previewBets, RED_NUM, "spin")}>
+            <Tooltip direction="top" content={<p style={{ whiteSpace: "pre-line" }}>{TooltipMsg(previewBets, RED_NUM, "spin")}</p>}>
               <button className="spinbtn" disabled={!chkspin() || selectedHistoryRound} onClick={() => (!isPreviewMode ? betPreviewbtn() : spinWheelbtn())}>
                 {!isPreviewMode ? "Preview Bets" : "Spin"}
               </button>
@@ -365,9 +402,10 @@ function Casino({ playerno }) {
               {selectedHistoryRound.allBets.map((bet, index) => (
                 <div key={index}>
                   <p>Player {bet.userId}</p>
-                  <p>Total : {bet.totalchip} ₹</p>
+                  <p>Bet Amount: {bet.totalchip} ₹</p>
                   <p>Bet : {bet.betType}</p>
                   {bet.singlebetVal != null && <p>Number : {bet.singlebetVal}</p>}
+                  <p>Status : {bet.status}</p>
                 </div>
               ))}
             </div>

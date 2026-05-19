@@ -16,17 +16,15 @@ const SpinResult = ({ allbet }) => {
       </button>
       {resPlayer.length > 0 ? (
         resPlayer.map((abet, index) => (
-          <>
-            <p key={index} className="resultDisplay">
-              <span>
-                Player {abet.userId} {abet.status} {abet.amt}
-              </span>
-              <span>Bet Type: {abet.betType}</span>
-              <small>
-                Player {abet.userId} betted {abet.totalchip}
-              </small>
-            </p>
-          </>
+          <p key={index} className="resultDisplay">
+            <span>
+              Player {abet.userId} {abet.status} {abet.amt}
+            </span>
+            <span>Bet Type: {abet.betType}</span>
+            <small>
+              Player {abet.userId} betted {abet.totalchip}
+            </small>
+          </p>
         ))
       ) : (
         <p>No One {msg}</p>

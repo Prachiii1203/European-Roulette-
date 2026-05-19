@@ -31,7 +31,6 @@ const WheelSpin = (allbet, RED_NUM, setSpinResult, setAllBet, settotalCasinoAmt,
   });
 
   setAllBet(updatedBet);
-  return val;
 };
 
 function countBetAmt(resultcondition, bet, n, settotalCasinoAmt, setPlayers) {

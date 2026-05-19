@@ -305,11 +305,34 @@ button:hover {
 .playergrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.showPlayer {
+  padding: 2px 15px;
+  margin: 5px;
+  border-radius: 8px;
+}
+
+.showPlayer p {
+  margin: 2px auto;
+  font-size: 16px;
+}
+
+.showPlayer button {
+  margin: 5px auto;
+}
+
+.leavebtn {
+  float: right;
+  background-color: black;
+  border: none;
 }
 
 .preNextbtnHide {
   display: none;
 }
+
 
 .preNextbtn {
   display: flex;
@@ -330,4 +353,18 @@ button:hover {
   justify-content: space-between;
   margin: 10px 25px;
   text-align: left;
+}
+
+.tooltip-content {
+  white-space: pre-line;
+  width: max-content;
+  min-width: 220px;
+  max-width: 300px;
+  word-break: keep-all;
+  padding: 8px;
+}
+
+.addPlayer {
+  background-color: green;
+  border: none
 }
